@@ -1,0 +1,94 @@
+﻿<Window x:Class="SkinHunterWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:SkinHunterWPF.ViewModels"
+        xmlns:v="clr-namespace:SkinHunterWPF.Views"
+        mc:Ignorable="d"
+        Title="Skin Hunter" Height="720" Width="1280"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource WindowBackgroundColor}"
+        WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResizeWithGrip">
+    <!-- Custom Window Style -->
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" ResizeBorderThickness="5" GlassFrameThickness="0"/>
+    </WindowChrome.WindowChrome>
+
+    <Border BorderBrush="{StaticResource BorderAccentColor}" BorderThickness="0,0,0,2">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Title Bar -->
+                <RowDefinition Height="*"/>
+                <!-- Content -->
+                <RowDefinition Height="Auto"/>
+                <!-- Bottom Nav -->
+            </Grid.RowDefinitions>
+
+            <!-- Custom Title Bar -->
+            <Border Grid.Row="0" Background="{StaticResource HeaderBackgroundColor}" Height="40" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid Margin="10,0">
+                    <Image Source="pack://application:,,,/Assets/logo.png" HorizontalAlignment="Left" Height="30" VerticalAlignment="Center"/>
+                    <TextBlock Text="Ready to start" Foreground="{StaticResource ForegroundLightGray}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12"/>
+                    <!-- Window Control Buttons -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button Style="{StaticResource ButtonIconOnlyStyle}" Click="MinimizeButton_Click" ToolTip="Minimize" Width="30" Height="30">
+                            <Path Data="M0,6 H12 V8 H0 Z" Fill="{StaticResource ForegroundGray}" Stretch="Uniform"/>
+                        </Button>
+                        <Button Style="{StaticResource ButtonIconOnlyStyle}" Click="MaximizeButton_Click" ToolTip="Maximize / Restore" Width="30" Height="30">
+                            <Path x:Name="MaximizeIcon" Data="M0,0 H10 V10 H0 Z M2,2 V8 H8 V2 Z" Fill="{StaticResource ForegroundGray}" Stretch="Uniform"/>
+                        </Button>
+                        <Button Style="{StaticResource ButtonIconOnlyStyle}" Click="CloseButton_Click" ToolTip="Close" Width="30" Height="30">
+                            <Path Data="M0,0 L10,10 M10,0 L0,10" Stroke="{StaticResource ForegroundGray}" StrokeThickness="1.5"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Main Content Area -->
+            <ContentControl Grid.Row="1" Margin="0,0,0,0"
+                            Content="{Binding CurrentViewModel}">
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type vm:ChampionGridViewModel}">
+                        <v:ChampionGridView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:ChampionDetailViewModel}">
+                        <v:ChampionDetailView/>
+                    </DataTemplate>
+                </ContentControl.Resources>
+            </ContentControl>
+
+            <!-- Bottom Navigation Bar -->
+            <Border Grid.Row="2" Background="{StaticResource HeaderBackgroundColor}" BorderBrush="{StaticResource BorderAccentColor}" BorderThickness="0,2,0,0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,10">
+                    <Button Content="Champions" Command="{Binding NavigateToChampionsCommand}" Margin="20,0" Width="100"/>
+                    <Button Content="Search" Command="{Binding OpenSearchCommand}" Margin="20,0" Width="100"/>
+                    <Button Content="Installed" Command="{Binding NavigateToInstalledCommand}" Margin="20,0" Width="100"/>
+                    <Button Content="Profile" Command="{Binding OpenProfileCommand}" Margin="20,0" Width="100"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Global Loading Indicator -->
+            <ProgressBar Grid.Row="1" Style="{StaticResource LoadingProgressBarStyle}"
+                         Visibility="{Binding CurrentViewModel.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+
+            <!-- Dialog Host Area -->
+            <Grid Grid.Row="0" Grid.RowSpan="3" Background="#AA000000"
+                  Visibility="{Binding DialogViewModel, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
+                <ContentControl Content="{Binding DialogViewModel}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ContentControl.Resources>
+                        <!-- Map Dialog ViewModels to Views -->
+                        <DataTemplate DataType="{x:Type vm:SkinDetailViewModel}">
+                            <v:SkinDetailDialog/>
+                            <!-- Your Dialog UserControl -->
+                        </DataTemplate>
+                        <!-- Add other dialogs here -->
+                    </ContentControl.Resources>
+                </ContentControl>
+            </Grid>
+
+        </Grid>
+    </Border>
+</Window>

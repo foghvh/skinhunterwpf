@@ -1,0 +1,75 @@
+<UserControl x:Class="SkinHunterWPF.Views.ChampionDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:SkinHunterWPF.ViewModels"
+             xmlns:m="clr-namespace:SkinHunterWPF.Models"
+             xmlns:converters="clr-namespace:SkinHunterWPF.Converters"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:ChampionDetailViewModel, IsDesignTimeCreatable=True}"
+             d:DesignHeight="600" d:DesignWidth="1000">
+	<Grid Background="{StaticResource WindowBackgroundColor}">
+		<Grid Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<Button Command="{Binding GoBackCommand}" Content="Back"
+                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,15,0,0" Width="70"/>
+
+			<StackPanel Grid.Row="0" Margin="20,60,20,20" Orientation="Horizontal"
+                        Visibility="{Binding Champion, Converter={StaticResource NullToVisibilityConverter}}">
+				<Image Source="{Binding Champion.ImageUrl}" Width="80" Height="80" Stretch="Uniform" Margin="0,0,15,0"/>
+				<StackPanel VerticalAlignment="Center">
+					<TextBlock Text="{Binding Champion.Name}" Foreground="{StaticResource ForegroundColor}" FontSize="24" FontWeight="Bold"/>
+					<TextBlock Text="{Binding Champion.Title}" Foreground="{StaticResource ForegroundLightGray}" FontSize="16" FontStyle="Italic"/>
+					<TextBlock Text="{Binding Champion.ShortBio}" Foreground="{StaticResource ForegroundGray}" FontSize="12" TextWrapping="Wrap" MaxWidth="500" Margin="0,5,0,0"/>
+				</StackPanel>
+			</StackPanel>
+
+			<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,10,0,0">
+				<ItemsControl ItemsSource="{Binding Skins}" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<WrapPanel Orientation="Horizontal" ItemWidth="220" ItemHeight="260" Margin="10"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate DataType="{x:Type m:Skin}">
+							<Button Command="{Binding DataContext.SelectSkinCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource ButtonTransparentStyle}" Margin="5">
+								<Border Style="{StaticResource CardBorderStyle}" Padding="0" Width="210">
+									<Grid>
+										<Image Source="{Binding TileImageUrl}" Height="200" Stretch="UniformToFill" VerticalAlignment="Top"
+                                               RenderOptions.BitmapScalingMode="HighQuality"/>
+
+										<Image Source="pack://application:,,,/Assets/legacy-icon.png" Width="24" Height="24" Opacity="0.8"
+											   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8"
+											   Visibility="{Binding IsLegacy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+										<Image Source="pack://application:,,,/Assets/chroma-icon.png" Width="24" Height="24" Opacity="0.8"
+											   HorizontalAlignment="Right" VerticalAlignment="Top" Margin="8"
+											   Visibility="{Binding HasChromas, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+										<Border VerticalAlignment="Bottom" Background="#AA000000" Padding="8,4">
+											<StackPanel Orientation="Horizontal">
+												<Image Source="{Binding RarityImageUrl}" Width="16" Height="16" Margin="0,0,5,0"
+                                                       Visibility="{Binding RarityImageUrl, Converter={StaticResource NullToVisibilityConverter}}"/>
+												<TextBlock Text="{Binding Name}" Foreground="{StaticResource ForegroundColor}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+											</StackPanel>
+										</Border>
+									</Grid>
+								</Border>
+							</Button>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</ScrollViewer>
+		</Grid>
+
+		<ProgressBar Style="{StaticResource LoadingProgressBarStyle}"
+					 Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+	</Grid>
+</UserControl>
