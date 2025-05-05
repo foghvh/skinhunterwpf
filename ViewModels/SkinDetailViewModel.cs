@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using System.Windows; // Required for standard MessageBox
+using System.Windows;
 
 namespace SkinHunterWPF.ViewModels
 {
@@ -63,7 +63,6 @@ namespace SkinHunterWPF.ViewModels
             DownloadSkinCommand.NotifyCanExecuteChanged();
 
             IsLoading = false;
-            // Use standard MessageBox
             MessageBox.Show($"'{skinOrChromaName}' (ID: {idToDownload}) download initiated!", "Download", MessageBoxButton.OK, MessageBoxImage.Information);
 
             CloseDialog();

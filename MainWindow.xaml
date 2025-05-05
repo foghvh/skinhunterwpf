@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SkinHunterWPF.ViewModels"
         xmlns:v="clr-namespace:SkinHunterWPF.Views"
+        xmlns:converters="clr-namespace:SkinHunterWPF.Converters"
         mc:Ignorable="d"
-        Title="Skin Hunter" Height="720" Width="1280"
+        Title="Skin Hunter" Height="720" Width="1280" MinHeight="600" MinWidth="1000"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource WindowBackgroundColor}"
         WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResizeWithGrip">
-    <!-- Custom Window Style -->
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="40" ResizeBorderThickness="5" GlassFrameThickness="0"/>
@@ -20,71 +20,65 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <!-- Title Bar -->
                 <RowDefinition Height="*"/>
-                <!-- Content -->
                 <RowDefinition Height="Auto"/>
-                <!-- Bottom Nav -->
             </Grid.RowDefinitions>
 
-            <!-- Custom Title Bar -->
             <Border Grid.Row="0" Background="{StaticResource HeaderBackgroundColor}" Height="40" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Grid Margin="10,0">
-                    <Image Source="pack://application:,,,/Assets/logo.png" HorizontalAlignment="Left" Height="30" VerticalAlignment="Center"/>
+                    <Image Source="pack://application:,,,/Assets/logo.png" HorizontalAlignment="Left" Height="28" VerticalAlignment="Center" Margin="5,0,0,0"/>
                     <TextBlock Text="Ready to start" Foreground="{StaticResource ForegroundLightGray}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12"/>
-                    <!-- Window Control Buttons -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Button Style="{StaticResource ButtonIconOnlyStyle}" Click="MinimizeButton_Click" ToolTip="Minimize" Width="30" Height="30">
+                        <Button Style="{StaticResource ButtonIconOnlyStyle}" Click="MinimizeButton_Click" ToolTip="Minimize">
                             <Path Data="M0,6 H12 V8 H0 Z" Fill="{StaticResource ForegroundGray}" Stretch="Uniform"/>
                         </Button>
-                        <Button Style="{StaticResource ButtonIconOnlyStyle}" Click="MaximizeButton_Click" ToolTip="Maximize / Restore" Width="30" Height="30">
+                        <Button Style="{StaticResource ButtonIconOnlyStyle}" Click="MaximizeButton_Click" ToolTip="Maximize / Restore">
                             <Path x:Name="MaximizeIcon" Data="M0,0 H10 V10 H0 Z M2,2 V8 H8 V2 Z" Fill="{StaticResource ForegroundGray}" Stretch="Uniform"/>
                         </Button>
-                        <Button Style="{StaticResource ButtonIconOnlyStyle}" Click="CloseButton_Click" ToolTip="Close" Width="30" Height="30">
+                        <Button Style="{StaticResource ButtonIconOnlyStyle}" Click="CloseButton_Click" ToolTip="Close">
                             <Path Data="M0,0 L10,10 M10,0 L0,10" Stroke="{StaticResource ForegroundGray}" StrokeThickness="1.5"/>
                         </Button>
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <!-- Main Content Area -->
-            <ContentControl Grid.Row="1" Margin="0,0,0,0"
-                            Content="{Binding CurrentViewModel}">
-                <ContentControl.Resources>
-                    <DataTemplate DataType="{x:Type vm:ChampionGridViewModel}">
-                        <v:ChampionGridView/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:ChampionDetailViewModel}">
-                        <v:ChampionDetailView/>
-                    </DataTemplate>
-                </ContentControl.Resources>
-            </ContentControl>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                          Padding="0,10,0,10">
+                <ContentControl Content="{Binding CurrentViewModel}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                    <ContentControl.Resources>
+                        <DataTemplate DataType="{x:Type vm:ChampionGridViewModel}">
+                            <v:ChampionGridView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:ChampionDetailViewModel}">
+                            <v:ChampionDetailView/>
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </ContentControl>
+            </ScrollViewer>
 
-            <!-- Bottom Navigation Bar -->
             <Border Grid.Row="2" Background="{StaticResource HeaderBackgroundColor}" BorderBrush="{StaticResource BorderAccentColor}" BorderThickness="0,2,0,0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,10">
-                    <Button Content="Champions" Command="{Binding NavigateToChampionsCommand}" Margin="20,0" Width="100"/>
-                    <Button Content="Search" Command="{Binding OpenSearchCommand}" Margin="20,0" Width="100"/>
-                    <Button Content="Installed" Command="{Binding NavigateToInstalledCommand}" Margin="20,0" Width="100"/>
-                    <Button Content="Profile" Command="{Binding OpenProfileCommand}" Margin="20,0" Width="100"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,5">
+                    <Button Style="{StaticResource NavButtonStyle}" Content="Champions" Command="{Binding NavigateToChampionsCommand}" Margin="15,0"
+                            Tag="M3,3H11V11H3V3M13,3H21V11H13V3M3,13H11V21H3V13M13,13H21V21H13V13Z"/>
+                    <Button Style="{StaticResource NavButtonStyle}" Content="Search" Command="{Binding OpenSearchCommand}" Margin="15,0"
+                            Tag="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L21.5,20L20,21.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"/>
+                    <Button Style="{StaticResource NavButtonStyle}" Content="Installed" Command="{Binding NavigateToInstalledCommand}" Margin="15,0"
+                            Tag="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                    <Button Style="{StaticResource NavButtonStyle}" Content="Profile" Command="{Binding OpenProfileCommand}" Margin="15,0"
+                            Tag="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
                 </StackPanel>
             </Border>
 
-            <!-- Global Loading Indicator -->
             <ProgressBar Grid.Row="1" Style="{StaticResource LoadingProgressBarStyle}"
                          Visibility="{Binding CurrentViewModel.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
 
-            <!-- Dialog Host Area -->
-            <Grid Grid.Row="0" Grid.RowSpan="3" Background="#AA000000"
+            <Grid Grid.Row="0" Grid.RowSpan="3" Background="#CC000000"
                   Visibility="{Binding DialogViewModel, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
                 <ContentControl Content="{Binding DialogViewModel}" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <ContentControl.Resources>
-                        <!-- Map Dialog ViewModels to Views -->
                         <DataTemplate DataType="{x:Type vm:SkinDetailViewModel}">
                             <v:SkinDetailDialog/>
-                            <!-- Your Dialog UserControl -->
                         </DataTemplate>
-                        <!-- Add other dialogs here -->
                     </ContentControl.Resources>
                 </ContentControl>
             </Grid>

@@ -7,161 +7,163 @@
              xmlns:m="clr-namespace:SkinHunterWPF.Models"
              xmlns:converters="clr-namespace:SkinHunterWPF.Converters"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance Type=vm:SkinDetailViewModel, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance Type=vm:SkinDetailViewModel, IsDesignTimeCreatable=False}"
              Width="850" MaxHeight="650" d:DesignWidth="850">
 
-	<!-- Outer border provides background and rounded corners -->
-	<Border Background="#181818" CornerRadius="5" BorderBrush="{StaticResource CardBorderColor}" BorderThickness="1">
-		<Grid Margin="15">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="*"/>
-			</Grid.ColumnDefinitions>
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="*"/>
-				<RowDefinition Height="Auto"/>
-			</Grid.RowDefinitions>
+    <Border Background="#1F1F1F" CornerRadius="5" BorderBrush="{StaticResource CardBorderColor}" BorderThickness="1">
+        <Grid Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-			<!-- Title Bar Area -->
-			<DockPanel Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,15" LastChildFill="False">
-				<Button DockPanel.Dock="Right" Command="{Binding CloseDialogCommand}" Style="{StaticResource ButtonIconOnlyStyle}" ToolTip="Close">
-					<Path Data="M0,0 L10,10 M10,0 L0,10" Stroke="{StaticResource ForegroundGray}" StrokeThickness="1.5" Width="10" Height="10"/>
-				</Button>
-				<StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-					<Image Source="{Binding SelectedSkin.RarityImageUrl}" Width="20" Height="20" Margin="0,0,8,0" VerticalAlignment="Center"
+            <DockPanel Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,15" LastChildFill="False">
+                <Button DockPanel.Dock="Right" Command="{Binding CloseDialogCommand}" Style="{StaticResource ButtonIconOnlyStyle}" ToolTip="Close">
+                    <Path Data="M0,0 L10,10 M10,0 L0,10" Stroke="{StaticResource ForegroundGray}" StrokeThickness="1.5" Width="10" Height="10"/>
+                </Button>
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                    <Image Source="{Binding SelectedSkin.RarityImageUrl}" Width="20" Height="20" Margin="0,0,8,0" VerticalAlignment="Center"
                            Visibility="{Binding SelectedSkin.RarityImageUrl, Converter={StaticResource NullToVisibilityConverter}}"/>
-					<TextBlock Text="{Binding SelectedSkin.Name}" Foreground="{StaticResource ForegroundColor}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
-				</StackPanel>
-			</DockPanel>
+                    <TextBlock Text="{Binding SelectedSkin.Name}" Foreground="{StaticResource ForegroundColor}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                </StackPanel>
+            </DockPanel>
 
-			<!-- Left Panel -->
-			<StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,20,0" MaxWidth="400">
-				<Border Style="{StaticResource CardBorderStyle}" Padding="0">
-					<Grid>
-						<Image Source="{Binding SelectedSkin.SplashImageUrl}" Height="240" Stretch="UniformToFill" VerticalAlignment="Top"/>
-					</Grid>
-				</Border>
-				<ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto" Margin="0,10,0,0">
-					<TextBlock Text="{Binding SelectedSkin.Description, FallbackValue='This skin does not have a description.'}"
-							  Foreground="{StaticResource ForegroundLightGray}" FontSize="13" TextWrapping="Wrap"/>
-				</ScrollViewer>
-				<Border Background="#44FFFF00" BorderBrush="#FFFFCC00" BorderThickness="1" CornerRadius="3" Padding="8,5" Margin="0,10,0,0">
-					<TextBlock Text="This skin may not work properly due to game updates" FontSize="11" Foreground="#FFFFEEAA"/>
-				</Border>
-			</StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,25,0" MaxWidth="400">
+                <Border Style="{StaticResource CardBorderStyle}" Padding="0">
+                    <Grid>
+                        <Image Source="{Binding SelectedSkin.SplashImageUrl}" Height="240" Stretch="UniformToFill" VerticalAlignment="Top"/>
+                    </Grid>
+                </Border>
+                <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto" Margin="0,15,0,0">
+                    <TextBlock Text="{Binding SelectedSkin.Description, FallbackValue='This skin does not have a description.'}"
+                               Foreground="{StaticResource ForegroundLightGray}" FontSize="13" TextWrapping="Wrap"/>
+                </ScrollViewer>
+                <Border Background="#44FFFF00" BorderBrush="#FFFFCC00" BorderThickness="1" CornerRadius="3" Padding="8,5" Margin="0,15,0,0">
+                    <TextBlock Text="This skin may not work properly due to game updates" FontSize="11" Foreground="#FFFFEEAA"/>
+                </Border>
+            </StackPanel>
 
-			<!-- Right Panel -->
-			<DockPanel Grid.Row="1" Grid.Column="1">
-				<TextBlock DockPanel.Dock="Top" Margin="0,0,0,10" Foreground="{StaticResource ForegroundLightGray}">
-					<Run Text="View skin on "/>
-					<Hyperlink NavigateUri="{Binding SelectedSkin.Id, Converter={StaticResource SkinIdToKhadaUrlConverter}, ConverterParameter={Binding SelectedChroma.Id}}" RequestNavigate="Hyperlink_RequestNavigate" >
-						<Run Text="Model viewer"/>
-					</Hyperlink>
-					<TextBlock Text="ℹ" Foreground="DodgerBlue" ToolTip="Preview the in-game appearance of the skin." Margin="5,0,0,0" VerticalAlignment="Center"/>
-				</TextBlock>
-				<Separator DockPanel.Dock="Top" Margin="0,0,0,10" Background="{StaticResource CardBorderColor}"/>
+            <DockPanel Grid.Row="1" Grid.Column="1">
+                <TextBlock DockPanel.Dock="Top" Margin="0,0,0,10" Foreground="{StaticResource ForegroundLightGray}">
+                    <Run Text="View skin on "/>
+                    <Hyperlink NavigateUri="{Binding SelectedSkin.Id, Converter={StaticResource SkinIdToKhadaUrlConverter}, ConverterParameter={Binding SelectedChroma.Id}}" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FF77AADD">
+                         <Run Text="Model viewer"/>
+                    </Hyperlink>
+                    <TextBlock Text="ℹ" Foreground="DodgerBlue" ToolTip="Preview the in-game appearance of the skin." Margin="5,0,0,0" VerticalAlignment="Center"/>
+                </TextBlock>
+                <Separator DockPanel.Dock="Top" Margin="0,0,0,15" Background="{StaticResource CardBorderColor}"/>
 
-				<TextBlock DockPanel.Dock="Top" Text="Chromas" Foreground="{StaticResource ForegroundColor}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <TextBlock DockPanel.Dock="Top" Text="Chromas" Foreground="{StaticResource ForegroundColor}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
 
-				<Border DockPanel.Dock="Bottom" Margin="0,10,0,0" Background="#4417A2B8" BorderBrush="#FF17A2B8" BorderThickness="1" Padding="8,5" CornerRadius="3">
-					<TextBlock FontSize="12" Foreground="#FFA6D9E2">
-						<Run Text="This is going to consume a credit"/>
-						<Run Text="{Binding UserCredits, StringFormat='({0} credits left)'}" Foreground="LightGreen"/>
-					</TextBlock>
-				</Border>
+                <Border DockPanel.Dock="Bottom" Margin="0,15,0,0" Background="#4417A2B8" BorderBrush="#FF17A2B8" BorderThickness="1" Padding="8,5" CornerRadius="3">
+                    <TextBlock FontSize="12" Foreground="#FFA6D9E2">
+                         <Run Text="This is going to consume a credit"/>
+                         <Run Text="{Binding UserCredits, StringFormat='({0} credits left)'}" Foreground="LightGreen"/>
+                    </TextBlock>
+                </Border>
 
-				<!-- Chroma Tabs -->
-				<TabControl>
-					<TabItem Header="Circles">
-						<ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="300" Padding="5">
-							<WrapPanel Orientation="Horizontal" ItemWidth="100" ItemHeight="110">
-								<RadioButton GroupName="ChromaSelectionCircles" Style="{StaticResource RadioButtonCardStyle}"
-											 IsChecked="{Binding IsDefaultSelected, Mode=OneWay}"
-											 Command="{Binding SelectDefaultCommand}">
-									<StackPanel Width="90" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center">
-										<Path Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z M17,15.59L15.59,17L12,13.41L8.41,17L7,15.59L10.59,12L7,8.41L8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59Z"
+                <TabControl Padding="0" Margin="0,5,0,0">
+                    <TabItem Header="Circles">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="300" Padding="5" HorizontalScrollBarVisibility="Disabled">
+                            <WrapPanel Orientation="Horizontal" ItemWidth="100" ItemHeight="110">
+                                <RadioButton GroupName="ChromaSelectionCircles" Style="{StaticResource RadioButtonCardStyle}"
+                                              IsChecked="{Binding IsDefaultSelected, Mode=OneWay}"
+                                              Command="{Binding SelectDefaultCommand}">
+                                    <StackPanel Width="90" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <Path Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z M17,15.59L15.59,17L12,13.41L8.41,17L7,15.59L10.59,12L7,8.41L8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59Z"
                                               Fill="{StaticResource ForegroundGray}" Width="40" Height="40" Stretch="Uniform" Margin="0,10,0,5"/>
-										<TextBlock Text="Default" HorizontalAlignment="Center" FontSize="11" Margin="0,5,0,0"/>
-									</StackPanel>
-								</RadioButton>
+                                        <TextBlock Text="Default" HorizontalAlignment="Center" FontSize="11" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                </RadioButton>
 
-								<ItemsControl ItemsSource="{Binding AvailableChromas}">
-									<ItemsControl.ItemsPanel>
-										<ItemsPanelTemplate>
-											<WrapPanel Orientation="Horizontal"/>
-										</ItemsPanelTemplate>
-									</ItemsControl.ItemsPanel>
-									<ItemsControl.ItemTemplate>
-										<DataTemplate DataType="{x:Type m:Chroma}">
-											<RadioButton GroupName="ChromaSelectionCircles" Style="{StaticResource RadioButtonCardStyle}"
+                                <ItemsControl ItemsSource="{Binding AvailableChromas}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type m:Chroma}">
+                                            <RadioButton GroupName="ChromaSelectionCircles" Style="{StaticResource RadioButtonCardStyle}"
                                                          IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                          Command="{Binding DataContext.SelectChromaCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                          CommandParameter="{Binding}">
-												<StackPanel Width="90" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center">
-													<Ellipse Width="60" Height="60" Stroke="{StaticResource ForegroundGray}" StrokeThickness="1" Fill="{Binding ColorBrush}" Margin="0,5,0,5"/>
-													<TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,0,0,5"/>
-												</StackPanel>
-											</RadioButton>
-										</DataTemplate>
-									</ItemsControl.ItemTemplate>
-								</ItemsControl>
-							</WrapPanel>
-						</ScrollViewer>
-					</TabItem>
-					<TabItem Header="Images">
-						<ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="300" Padding="5">
-							<WrapPanel Orientation="Horizontal" ItemWidth="100" ItemHeight="110">
-								<RadioButton GroupName="ChromaSelectionImages" Style="{StaticResource RadioButtonCardStyle}"
+                                                <StackPanel Width="90" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                    <Ellipse Width="60" Height="60" Stroke="{StaticResource ForegroundGray}" StrokeThickness="1" Fill="{Binding ColorBrush}" Margin="0,5,0,5"/>
+                                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,0,0,5"/>
+                                                </StackPanel>
+                                            </RadioButton>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </WrapPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem Header="Images">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="300" Padding="5" HorizontalScrollBarVisibility="Disabled">
+                            <WrapPanel Orientation="Horizontal" ItemWidth="100" ItemHeight="110">
+                                <RadioButton GroupName="ChromaSelectionImages" Style="{StaticResource RadioButtonCardStyle}"
                                              IsChecked="{Binding IsDefaultSelected, Mode=OneWay}"
                                              Command="{Binding SelectDefaultCommand}">
-									<StackPanel Width="90" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center">
-										<Path Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z M17,15.59L15.59,17L12,13.41L8.41,17L7,15.59L10.59,12L7,8.41L8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59Z"
+                                    <StackPanel Width="90" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <Path Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z M17,15.59L15.59,17L12,13.41L8.41,17L7,15.59L10.59,12L7,8.41L8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59Z"
                                               Fill="{StaticResource ForegroundGray}" Width="40" Height="40" Stretch="Uniform" Margin="0,10,0,5"/>
-										<TextBlock Text="Default" HorizontalAlignment="Center" FontSize="11" Margin="0,5,0,0"/>
-									</StackPanel>
-								</RadioButton>
+                                        <TextBlock Text="Default" HorizontalAlignment="Center" FontSize="11" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                </RadioButton>
 
-								<ItemsControl ItemsSource="{Binding AvailableChromas}">
-									<ItemsControl.ItemsPanel>
-										<ItemsPanelTemplate>
-											<WrapPanel Orientation="Horizontal"/>
-										</ItemsPanelTemplate>
-									</ItemsControl.ItemsPanel>
-									<ItemsControl.ItemTemplate>
-										<DataTemplate DataType="{x:Type m:Chroma}">
-											<RadioButton GroupName="ChromaSelectionImages" Style="{StaticResource RadioButtonCardStyle}"
+                                <ItemsControl ItemsSource="{Binding AvailableChromas}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type m:Chroma}">
+                                            <RadioButton GroupName="ChromaSelectionImages" Style="{StaticResource RadioButtonCardStyle}"
                                                          IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                          Command="{Binding DataContext.SelectChromaCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                          CommandParameter="{Binding}">
-												<StackPanel Width="90" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center">
-													<Image Source="{Binding ImageUrl}" Width="70" Height="70" Stretch="Uniform" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
-													<TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,0,0,5"/>
-												</StackPanel>
-											</RadioButton>
-										</DataTemplate>
-									</ItemsControl.ItemTemplate>
-								</ItemsControl>
-							</WrapPanel>
-						</ScrollViewer>
-					</TabItem>
-				</TabControl>
-			</DockPanel>
+                                                <StackPanel Width="90" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                    <Image Source="{Binding ImageUrl}" Width="70" Height="70" Stretch="Uniform" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,0,0,5"/>
+                                                </StackPanel>
+                                            </RadioButton>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </WrapPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
+            </DockPanel>
 
-			<!-- Bottom Buttons -->
-			<Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="0,15,0,0">
-				<Button Content="Close" HorizontalAlignment="Left" Width="80"
+            <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="0,20,0,0">
+                <Button Content="Close" HorizontalAlignment="Left" Width="90"
                         Command="{Binding CloseDialogCommand}"/>
-				<Button Content="{Binding SelectedChroma, Converter={StaticResource ChromaToButtonTextConverter}, FallbackValue='Download Skin'}"
-                         Style="{StaticResource ButtonPrimaryStyle}" HorizontalAlignment="Right" Width="140"
+                <Button Content="{Binding SelectedChroma, Converter={StaticResource ChromaToButtonTextConverter}, FallbackValue='Download Skin'}"
+                         Style="{StaticResource ButtonPrimaryStyle}" HorizontalAlignment="Right" Width="150"
                          Command="{Binding DownloadSkinCommand}"
-                         IsEnabled="{Binding CanDownload}"/>
-				<!-- Optional: Add download icon inside button content -->
-			</Grid>
+                         IsEnabled="{Binding CanDownload}">
+                    <Button.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" Fill="White" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </Button.ContentTemplate>
+                </Button>
+            </Grid>
 
-			<ProgressBar Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="2" Style="{StaticResource LoadingProgressBarStyle}"
-						 Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+            <ProgressBar Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="2" Style="{StaticResource LoadingProgressBarStyle}"
+                          Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
 
-		</Grid>
-	</Border>
+        </Grid>
+    </Border>
 </UserControl>

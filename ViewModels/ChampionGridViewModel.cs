@@ -7,8 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.ComponentModel;
-using System; // Required for StringComparison
-using System.Windows; // Required for standard MessageBox
+using System;
+using System.Windows;
 
 namespace SkinHunterWPF.ViewModels
 {
@@ -64,7 +64,6 @@ namespace SkinHunterWPF.ViewModels
             }
             else
             {
-                // Use standard MessageBox
                 MessageBox.Show("Failed to load champions.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             IsLoading = false;

@@ -5,7 +5,7 @@ using SkinHunterWPF.Services;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Windows; // Required for standard MessageBox
+using System.Windows;
 
 namespace SkinHunterWPF.ViewModels
 {
@@ -27,7 +27,6 @@ namespace SkinHunterWPF.ViewModels
         [RelayCommand]
         public async Task LoadChampionAsync(int championId)
         {
-            // Avoid reloading if already loaded and skins are present
             if (Champion?.Id == championId && Skins.Any()) return;
 
             IsLoading = true;
@@ -42,7 +41,6 @@ namespace SkinHunterWPF.ViewModels
                 {
                     foreach (var skin in details.Skins)
                     {
-                        // Filter out base/original skins
                         if (!skin.Name.Equals($"{details.Name}", StringComparison.OrdinalIgnoreCase) &&
                             !skin.Name.Equals($"Base {details.Name}", StringComparison.OrdinalIgnoreCase) &&
                             !skin.Name.Contains("Original", StringComparison.OrdinalIgnoreCase))
@@ -54,7 +52,6 @@ namespace SkinHunterWPF.ViewModels
             }
             else
             {
-                // Use standard MessageBox
                 MessageBox.Show($"Failed to load details for Champion ID: {championId}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             IsLoading = false;
@@ -65,7 +62,6 @@ namespace SkinHunterWPF.ViewModels
         {
             if (skin != null)
             {
-                // ShowDialog logic is handled by NavigationService which uses MainViewModel
                 _navigationService.ShowDialog<SkinDetailViewModel>(skin);
             }
         }

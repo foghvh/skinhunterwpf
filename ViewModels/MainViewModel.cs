@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using SkinHunterWPF.Services;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Windows;
+using System.Windows; // Required for MessageBox
 
 namespace SkinHunterWPF.ViewModels
 {
@@ -14,7 +14,6 @@ namespace SkinHunterWPF.ViewModels
         [ObservableProperty]
         private BaseViewModel? _currentViewModel;
 
-        // Property to hold the ViewModel for the currently displayed dialog
         [ObservableProperty]
         private BaseViewModel? _dialogViewModel;
 
@@ -28,7 +27,6 @@ namespace SkinHunterWPF.ViewModels
 
         private async Task LoadInitialDataAsync()
         {
-            // Check underlying collection via view if ChampionsView is used
             if (CurrentViewModel is ChampionGridViewModel cgvm && !cgvm.ChampionsView.Cast<object>().Any())
             {
                 await cgvm.LoadChampionsCommand.ExecuteAsync(null);
@@ -36,18 +34,16 @@ namespace SkinHunterWPF.ViewModels
             IsLoading = false;
         }
 
-        // Command bound to the Dialog's close button (or triggered by dialog VM)
         [RelayCommand]
         private void CloseDialog()
         {
             DialogViewModel = null;
         }
 
-        // --- Navigation Commands ---
         [RelayCommand]
         private void NavigateToChampions()
         {
-            if (DialogViewModel == null) // Prevent navigation while dialog is open? Optional.
+            if (DialogViewModel == null)
                 _navigationService.NavigateTo<ChampionGridViewModel>();
         }
 
@@ -55,7 +51,7 @@ namespace SkinHunterWPF.ViewModels
         private void NavigateToInstalled()
         {
             if (DialogViewModel == null)
-                MessageBox.Show("Installed View Not Implemented Yet."); // Use standard MessageBox
+                MessageBox.Show("Installed View Not Implemented Yet.");
         }
 
         [RelayCommand]

@@ -6,10 +6,27 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- No HandyControl themes needed -->
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Converters -->
+            <Color x:Key="BorderAccentColorValue">#586A9E</Color>
+            <Color x:Key="BlackColorValue">#000000</Color>
+
+            <SolidColorBrush x:Key="WindowBackgroundColor" Color="#1A1A1A"/>
+            <SolidColorBrush x:Key="HeaderBackgroundColor" Color="#0F1729"/>
+            <SolidColorBrush x:Key="BorderAccentColor" Color="{StaticResource BorderAccentColorValue}"/>
+            <SolidColorBrush x:Key="ForegroundColor" Color="WhiteSmoke"/>
+            <SolidColorBrush x:Key="ForegroundLightGray" Color="#CCCCCC"/>
+            <SolidColorBrush x:Key="ForegroundGray" Color="#999999"/>
+            <SolidColorBrush x:Key="CardBackgroundColor" Color="#252525"/>
+            <SolidColorBrush x:Key="CardBorderColor" Color="#383838"/>
+            <SolidColorBrush x:Key="ButtonPrimaryBrush" Color="{StaticResource BorderAccentColorValue}"/>
+            <SolidColorBrush x:Key="ButtonDefaultBrush" Color="#FF3A3A3A"/>
+            <SolidColorBrush x:Key="ButtonHoverBrush" Color="#FF6A7DBE"/>
+            <SolidColorBrush x:Key="ButtonDisabledBrush" Color="#FF303030"/>
+            <SolidColorBrush x:Key="ScrollBarBackgroundBrush" Color="#252525"/>
+            <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="#505050"/>
+            <SolidColorBrush x:Key="ScrollBarThumbHoverBrush" Color="#686868"/>
+
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <converters:NullOrEmptyToVisibilityConverter x:Key="NullOrEmptyToVisibilityConverter"/>
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
@@ -17,28 +34,14 @@
             <converters:ChromaToButtonTextConverter x:Key="ChromaToButtonTextConverter"/>
             <converters:SkinIdToKhadaUrlConverter x:Key="SkinIdToKhadaUrlConverter"/>
 
-            <!-- Global Colors -->
-            <SolidColorBrush x:Key="WindowBackgroundColor" Color="#1e1e1e"/>
-            <SolidColorBrush x:Key="HeaderBackgroundColor" Color="#0F1729"/>
-            <SolidColorBrush x:Key="BorderAccentColor" Color="#586A9E"/>
-            <SolidColorBrush x:Key="ForegroundColor" Color="WhiteSmoke"/>
-            <SolidColorBrush x:Key="ForegroundLightGray" Color="LightGray"/>
-            <SolidColorBrush x:Key="ForegroundGray" Color="Gray"/>
-            <SolidColorBrush x:Key="CardBackgroundColor" Color="#282828"/>
-            <SolidColorBrush x:Key="CardBorderColor" Color="#444444"/>
-            <SolidColorBrush x:Key="ButtonPrimaryBrush" Color="#FF586A9E"/>
-            <SolidColorBrush x:Key="ButtonDefaultBrush" Color="#FF444444"/>
-            <SolidColorBrush x:Key="ButtonHoverBrush" Color="#FF6A7DBE"/>
-            <SolidColorBrush x:Key="ButtonDisabledBrush" Color="#FF333333"/>
-
-            <!-- Base Button Style -->
             <Style TargetType="Button">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
                 <Setter Property="Background" Value="{StaticResource ButtonDefaultBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource BorderAccentColor}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
                 <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Padding" Value="10,5"/>
+                <Setter Property="Padding" Value="10,6"/>
                 <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
@@ -46,18 +49,21 @@
                                      Background="{TemplateBinding Background}"
                                      BorderBrush="{TemplateBinding BorderBrush}"
                                      BorderThickness="{TemplateBinding BorderThickness}"
-                                     CornerRadius="3">
+                                     CornerRadius="4">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="border" Property="Background" Value="{StaticResource ButtonHoverBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource ButtonHoverBrush}"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
                                     <Setter TargetName="border" Property="Background" Value="{StaticResource BorderAccentColor}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource BorderAccentColor}"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter TargetName="border" Property="Background" Value="{StaticResource ButtonDisabledBrush}"/>
+                                    <Setter Property="BorderBrush" Value="#404040"/>
                                     <Setter TargetName="border" Property="Opacity" Value="0.6"/>
                                     <Setter Property="Foreground" Value="{StaticResource ForegroundGray}"/>
                                 </Trigger>
@@ -67,17 +73,17 @@
                 </Setter>
             </Style>
 
-            <!-- Style for Buttons with only Icon -->
-            <Style x:Key="ButtonIconOnlyStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Style x:Key="ButtonIconOnlyStyle" TargetType="Button">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Width" Value="28"/>
-                <Setter Property="Height" Value="28"/>
-                <Setter Property="Padding" Value="3"/>
+                <Setter Property="Width" Value="34"/>
+                <Setter Property="Height" Value="34"/>
+                <Setter Property="Padding" Value="6"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border x:Name="border" Background="Transparent" CornerRadius="14">
+                            <Border x:Name="border" Background="Transparent" CornerRadius="3">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <ControlTemplate.Triggers>
@@ -93,7 +99,6 @@
                 </Setter>
             </Style>
 
-            <!-- Style for Transparent Buttons (like item clicks) -->
             <Style x:Key="ButtonTransparentStyle" TargetType="Button">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderThickness" Value="0"/>
@@ -102,22 +107,29 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" x:Name="Bd">
                                 <ContentPresenter/>
                             </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect ShadowDepth="0" Color="{StaticResource BorderAccentColorValue}" Opacity="0.5" BlurRadius="8"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Style>
 
-            <!-- Primary Button Style -->
             <Style x:Key="ButtonPrimaryStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                 <Setter Property="Background" Value="{StaticResource ButtonPrimaryBrush}"/>
                 <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryBrush}"/>
                 <Setter Property="Foreground" Value="White"/>
             </Style>
 
-            <!-- Card Style (using Border) -->
             <Style x:Key="CardBorderStyle" TargetType="Border">
                 <Setter Property="Background" Value="{StaticResource CardBackgroundColor}"/>
                 <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
@@ -126,12 +138,11 @@
                 <Setter Property="Padding" Value="5"/>
                 <Setter Property="Effect">
                     <Setter.Value>
-                        <DropShadowEffect ShadowDepth="1" Color="Black" Opacity="0.3" BlurRadius="5"/>
+                        <DropShadowEffect ShadowDepth="1" Color="{StaticResource BlackColorValue}" Opacity="0.3" BlurRadius="5"/>
                     </Setter.Value>
                 </Setter>
             </Style>
 
-            <!-- Loading Indicator Style (Using ProgressBar) -->
             <Style x:Key="LoadingProgressBarStyle" TargetType="ProgressBar">
                 <Setter Property="IsIndeterminate" Value="True"/>
                 <Setter Property="Width" Value="50"/>
@@ -166,17 +177,16 @@
                 </Setter>
             </Style>
 
-            <!-- Style for TabControl -->
             <Style TargetType="TabControl">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Padding" Value="0"/>
             </Style>
 
-            <!-- Style for TabItem Headers -->
             <Style TargetType="TabItem">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundLightGray}"/>
                 <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Padding" Value="10,5"/>
+                <Setter Property="Padding" Value="12,6"/>
                 <Setter Property="BorderThickness" Value="0 0 0 2"/>
                 <Setter Property="BorderBrush" Value="Transparent"/>
                 <Setter Property="Template">
@@ -187,7 +197,7 @@
                                      BorderBrush="{TemplateBinding BorderBrush}"
                                      Background="{TemplateBinding Background}"
                                      Padding="{TemplateBinding Padding}"
-                                     Margin="0,0,5,0">
+                                     Margin="0,0,8,0">
                                 <ContentPresenter ContentSource="Header"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"/>
@@ -208,22 +218,22 @@
                 </Setter>
             </Style>
 
-            <!-- Placeholder Text for TextBox -->
             <Style x:Key="TextBoxWithPlaceholder" TargetType="TextBox">
-                <Setter Property="Background" Value="#333"/>
+                <Setter Property="Background" Value="#2D2D2D"/>
                 <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
                 <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
                 <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Padding" Value="5"/>
+                <Setter Property="Padding" Value="8,5"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="CaretBrush" Value="{StaticResource ForegroundLightGray}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="TextBox">
                             <Grid>
-                                <Border Background="{TemplateBinding Background}"
+                                <Border x:Name="border" Background="{TemplateBinding Background}"
                                             BorderBrush="{TemplateBinding BorderBrush}"
                                             BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="3"/>
+                                            CornerRadius="4"/>
                                 <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                                 <TextBlock Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
                                                Foreground="{StaticResource ForegroundGray}"
@@ -239,6 +249,10 @@
                                 </MultiTrigger>
                                 <Trigger Property="IsFocused" Value="True">
                                     <Setter Property="BorderBrush" Value="{StaticResource BorderAccentColor}"/>
+                                    <Setter TargetName="border" Property="Background" Value="#353535"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="#555"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -246,7 +260,6 @@
                 </Setter>
             </Style>
 
-            <!-- Style for RadioButton looking like a Card -->
             <Style x:Key="RadioButtonCardStyle" TargetType="RadioButton">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
                 <Setter Property="Background" Value="{StaticResource CardBackgroundColor}"/>
@@ -254,7 +267,7 @@
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="Padding" Value="0"/>
                 <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Margin" Value="3"/>
+                <Setter Property="Margin" Value="4"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                 <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                 <Setter Property="Template">
@@ -281,6 +294,128 @@
                 </Setter>
             </Style>
 
+            <Style x:Key="ScrollBarThumbStyle" TargetType="{x:Type Thumb}">
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="IsTabStop" Value="false"/>
+                <Setter Property="Focusable" Value="false"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Thumb}">
+                            <Border Name="ThumbVisual" CornerRadius="4"
+                                    Background="{StaticResource ScrollBarThumbBrush}"
+                                    BorderBrush="Transparent" BorderThickness="0" />
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ThumbVisual" Property="Background" Value="{StaticResource ScrollBarThumbHoverBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsDragging" Value="True">
+                                    <Setter TargetName="ThumbVisual" Property="Background" Value="{StaticResource BorderAccentColor}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ScrollBarPageButtonStyle" TargetType="{x:Type RepeatButton}">
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="IsTabStop" Value="false"/>
+                <Setter Property="Focusable" Value="false"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type RepeatButton}">
+                            <Border Background="Transparent" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="{x:Type ScrollBar}">
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="Width" Value="8"/>
+                <Setter Property="MinWidth" Value="8"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ScrollBar}">
+                            <Grid Name="Bg" SnapsToDevicePixels="true" Background="{StaticResource ScrollBarBackgroundBrush}">
+                                <Track x:Name="PART_Track" IsDirectionReversed="true" Width="Auto" HorizontalAlignment="Stretch">
+                                    <Track.DecreaseRepeatButton>
+                                        <RepeatButton Style="{StaticResource ScrollBarPageButtonStyle}" Command="ScrollBar.PageUpCommand" />
+                                    </Track.DecreaseRepeatButton>
+                                    <Track.Thumb>
+                                        <Thumb Style="{StaticResource ScrollBarThumbStyle}" Margin="1,0,1,0" />
+                                    </Track.Thumb>
+                                    <Track.IncreaseRepeatButton>
+                                        <RepeatButton Style="{StaticResource ScrollBarPageButtonStyle}" Command="ScrollBar.PageDownCommand" />
+                                    </Track.IncreaseRepeatButton>
+                                </Track>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="Orientation" Value="Horizontal">
+                        <Setter Property="Width" Value="Auto"/>
+                        <Setter Property="MinWidth" Value="0"/>
+                        <Setter Property="Height" Value="8"/>
+                        <Setter Property="MinHeight" Value="8"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                                    <Grid Name="Bg" SnapsToDevicePixels="true" Background="{StaticResource ScrollBarBackgroundBrush}">
+                                        <Track x:Name="PART_Track" IsDirectionReversed="False" Height="Auto" VerticalAlignment="Stretch">
+                                            <Track.DecreaseRepeatButton>
+                                                <RepeatButton Style="{StaticResource ScrollBarPageButtonStyle}" Command="ScrollBar.PageLeftCommand" />
+                                            </Track.DecreaseRepeatButton>
+                                            <Track.Thumb>
+                                                <Thumb Style="{StaticResource ScrollBarThumbStyle}" Margin="0,1,0,1" />
+                                            </Track.Thumb>
+                                            <Track.IncreaseRepeatButton>
+                                                <RepeatButton Style="{StaticResource ScrollBarPageButtonStyle}" Command="ScrollBar.PageRightCommand" />
+                                            </Track.IncreaseRepeatButton>
+                                        </Track>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="NavButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Foreground" Value="{StaticResource ForegroundGray}"/>
+                <Setter Property="Width" Value="Auto"/>
+                <Setter Property="MinWidth" Value="90"/>
+                <Setter Property="Padding" Value="10,5"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="Transparent" Padding="{TemplateBinding Padding}">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                    <Path x:Name="iconPath" Data="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" Fill="{TemplateBinding Foreground}" Width="20" Height="20" Stretch="Uniform" Margin="0,0,0,3"/>
+                                    <TextBlock x:Name="buttonText" Text="{TemplateBinding Content}" FontSize="11" FontWeight="Medium" TextAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
+                                    <Setter TargetName="iconPath" Property="Fill" Value="{StaticResource ForegroundColor}"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource BorderAccentColor}"/>
+                                    <Setter TargetName="iconPath" Property="Fill" Value="{StaticResource BorderAccentColor}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
-</Application>
+</Application> 

@@ -7,46 +7,46 @@
              xmlns:m="clr-namespace:SkinHunterWPF.Models"
              xmlns:converters="clr-namespace:SkinHunterWPF.Converters"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance Type=vm:ChampionGridViewModel, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance Type=vm:ChampionGridViewModel, IsDesignTimeCreatable=False}"
              d:DesignHeight="600" d:DesignWidth="1000">
-	<Grid Background="{StaticResource WindowBackgroundColor}">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
+    <Grid Background="{StaticResource WindowBackgroundColor}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-		<TextBox Grid.Row="0" Margin="15" Style="{StaticResource TextBoxWithPlaceholder}"
-				 Tag="Search Champions..."
-		Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox Grid.Row="0" Margin="15" Style="{StaticResource TextBoxWithPlaceholder}"
+                  Tag="Search Champions..."
+                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
 
-		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-			<ItemsControl ItemsSource="{Binding ChampionsView}" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
-				<ItemsControl.ItemsPanel>
-					<ItemsPanelTemplate>
-						<WrapPanel Orientation="Horizontal" ItemWidth="100" ItemHeight="130" Margin="10"/>
-					</ItemsPanelTemplate>
-				</ItemsControl.ItemsPanel>
-				<ItemsControl.ItemTemplate>
-					<DataTemplate DataType="{x:Type m:ChampionSummary}">
-						<Button Command="{Binding DataContext.SelectChampionCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                CommandParameter="{Binding}"
-                                Style="{StaticResource ButtonTransparentStyle}" Margin="5">
-							<Border Style="{StaticResource CardBorderStyle}" Padding="0">
-								<StackPanel Width="90">
-									<Image Source="{Binding ImageUrl}" Width="80" Height="80" Stretch="Uniform" Margin="5,5,5,0"
-                                           RenderOptions.BitmapScalingMode="HighQuality"/>
-									<TextBlock Text="{Binding Name}" Margin="5,5,5,5" HorizontalAlignment="Center"
-                                               Foreground="{StaticResource ForegroundColor}" FontSize="12" FontWeight="SemiBold"
-                                               TextTrimming="CharacterEllipsis" TextAlignment="Center"/>
-								</StackPanel>
-							</Border>
-						</Button>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-		</ScrollViewer>
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding ChampionsView}"
+                      VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                      HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" ItemWidth="100" ItemHeight="130"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type m:ChampionSummary}">
+                    <Button Command="{Binding DataContext.SelectChampionCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}"
+                            Style="{StaticResource ButtonTransparentStyle}" Margin="4">
+                        <Border Style="{StaticResource CardBorderStyle}" Padding="0">
+                            <StackPanel Width="90">
+                                <Image Source="{Binding ImageUrl}" Width="80" Height="80" Stretch="Uniform" Margin="5,5,5,0"
+                                       RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock Text="{Binding Name}" Margin="5,5,5,5" HorizontalAlignment="Center"
+                                           Foreground="{StaticResource ForegroundColor}" FontSize="12" FontWeight="SemiBold"
+                                           TextTrimming="CharacterEllipsis" TextAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
-		<ProgressBar Grid.Row="1" Style="{StaticResource LoadingProgressBarStyle}"
-					 Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
-	</Grid>
+        <ProgressBar Grid.Row="1" Style="{StaticResource LoadingProgressBarStyle}"
+                      Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+    </Grid>
 </UserControl>
