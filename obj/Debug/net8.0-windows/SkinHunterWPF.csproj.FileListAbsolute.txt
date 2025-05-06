@@ -65,3 +65,4 @@ C:\Users\asd\Source\Repos\skinhunterwpf\obj\Debug\net8.0-windows\refint\SkinHunt
 C:\Users\asd\Source\Repos\skinhunterwpf\obj\Debug\net8.0-windows\SkinHunterWPF.pdb
 C:\Users\asd\Source\Repos\skinhunterwpf\obj\Debug\net8.0-windows\SkinHunterWPF.genruntimeconfig.cache
 C:\Users\asd\Source\Repos\skinhunterwpf\obj\Debug\net8.0-windows\ref\SkinHunterWPF.dll
+C:\Users\dev\source\repos\SkinHunterWPF\obj\Debug\net8.0-windows\SkinHunterWPF.sourcelink.json

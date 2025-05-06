@@ -18,8 +18,10 @@ namespace SkinHunterWPF.Models
         [JsonPropertyName("colors")]
         public List<string>? Colors { get; set; }
 
+        [JsonIgnore]
         public string ImageUrl => Services.CdragonDataService.GetAssetUrl(ChromaPath);
 
+        [JsonIgnore]
         public Brush? ColorBrush
         {
             get
@@ -34,15 +36,27 @@ namespace SkinHunterWPF.Models
                 {
                     var gradient = new LinearGradientBrush
                     {
-                        StartPoint = new System.Windows.Point(0, 0.5), // Left Middle
-                        EndPoint = new System.Windows.Point(1, 0.5)   // Right Middle
+                        StartPoint = new System.Windows.Point(0, 0.5),
+                        EndPoint = new System.Windows.Point(1, 0.5)
                     };
-                    // Handle cases with more than 2 colors if needed, adjusting stops
                     gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString(Colors[0]), 0.0));
                     gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString(Colors[1]), 1.0));
                     return gradient;
                 }
                 catch { return Brushes.Gray; }
+            }
+        }
+
+        [JsonIgnore]
+        private bool _isSelected;
+
+        [JsonIgnore]
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                _isSelected = value;
             }
         }
     }

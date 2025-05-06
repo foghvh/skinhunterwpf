@@ -51,7 +51,7 @@
             <DockPanel Grid.Row="1" Grid.Column="1">
                 <TextBlock DockPanel.Dock="Top" Margin="0,0,0,10" Foreground="{StaticResource ForegroundLightGray}">
                     <Run Text="View skin on "/>
-                    <Hyperlink NavigateUri="{Binding SelectedSkin.Id, Converter={StaticResource SkinIdToKhadaUrlConverter}, ConverterParameter={Binding SelectedChroma.Id}}" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FF77AADD">
+                    <Hyperlink NavigateUri="{Binding KhadaViewerUrl}" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FF77AADD">
                          <Run Text="Model viewer"/>
                     </Hyperlink>
                     <TextBlock Text="ℹ" Foreground="DodgerBlue" ToolTip="Preview the in-game appearance of the skin." Margin="5,0,0,0" VerticalAlignment="Center"/>

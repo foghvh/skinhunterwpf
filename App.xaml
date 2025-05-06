@@ -80,6 +80,7 @@
                 <Setter Property="Height" Value="34"/>
                 <Setter Property="Padding" Value="6"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="{StaticResource ForegroundGray}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
@@ -89,9 +90,11 @@
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="border" Property="Background" Value="#44FFFFFF"/>
+                                    <Setter Property="Foreground" Value="{StaticResource ForegroundLightGray}"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
                                     <Setter TargetName="border" Property="Background" Value="#66FFFFFF"/>
+                                    <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -418,4 +421,4 @@
 
         </ResourceDictionary>
     </Application.Resources>
-</Application> 
+</Application>

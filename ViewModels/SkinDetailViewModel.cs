@@ -22,12 +22,31 @@ namespace SkinHunterWPF.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDefaultSelected))]
+        [NotifyPropertyChangedFor(nameof(KhadaViewerUrl))]
         private Chroma? _selectedChroma;
 
         [ObservableProperty]
         private int _userCredits = 5;
 
         public bool IsDefaultSelected => SelectedChroma == null;
+
+        public string? KhadaViewerUrl
+        {
+            get
+            {
+                if (SelectedSkin == null) return null;
+
+                int skinId = SelectedSkin.Id;
+                int? chromaId = IsDefaultSelected ? null : SelectedChroma?.Id;
+
+                string url = $"https://modelviewer.lol/model-viewer?id={skinId}";
+                if (chromaId.HasValue && chromaId.Value != 0 && chromaId.Value / 1000 == skinId)
+                {
+                    url += $"&chroma={chromaId.Value}";
+                }
+                return url;
+            }
+        }
 
         public SkinDetailViewModel(IServiceProvider serviceProvider)
         {
@@ -47,6 +66,7 @@ namespace SkinHunterWPF.ViewModels
             }
             SelectedChroma = null;
             OnPropertyChanged(nameof(IsDefaultSelected));
+            OnPropertyChanged(nameof(KhadaViewerUrl));
             DownloadSkinCommand.NotifyCanExecuteChanged();
         }
 
