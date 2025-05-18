@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using System.Diagnostics;
 
 namespace SkinHunterWPF.ViewModels
 {
@@ -35,10 +36,8 @@ namespace SkinHunterWPF.ViewModels
             get
             {
                 if (SelectedSkin == null) return null;
-
                 int skinId = SelectedSkin.Id;
-                int? chromaId = IsDefaultSelected ? null : SelectedChroma?.Id;
-
+                int? chromaId = SelectedChroma?.Id;
                 string url = $"https://modelviewer.lol/model-viewer?id={skinId}";
                 if (chromaId.HasValue && chromaId.Value != 0 && chromaId.Value / 1000 == skinId)
                 {
@@ -51,23 +50,43 @@ namespace SkinHunterWPF.ViewModels
         public SkinDetailViewModel(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            Debug.WriteLine("[SkinDetailViewModel] Constructor called.");
         }
 
         public void LoadSkin(Skin skin)
         {
+            Debug.WriteLine($"[SkinDetailViewModel] LoadSkin called for Skin ID: {skin.Id} ('{skin.Name}')");
             SelectedSkin = skin;
             AvailableChromas.Clear();
+            Debug.WriteLine($"[SkinDetailViewModel] AvailableChromas cleared.");
+
             if (skin.Chromas != null && skin.Chromas.Any())
             {
+                Debug.WriteLine($"[SkinDetailViewModel] Skin has {skin.Chromas.Count} chromas to process.");
                 foreach (var chroma in skin.Chromas)
                 {
-                    AvailableChromas.Add(chroma);
+                    if (chroma != null)
+                    {
+                        chroma.IsSelected = false;
+                        AvailableChromas.Add(chroma);
+                        Debug.WriteLine($"[SkinDetailViewModel] Added Chroma ID: {chroma.Id}, Name: '{chroma.Name}' to AvailableChromas.");
+                    }
                 }
+                Debug.WriteLine($"[SkinDetailViewModel] Finished processing chromas. Final AvailableChromas count: {AvailableChromas.Count}");
             }
+            else
+            {
+                Debug.WriteLine($"[SkinDetailViewModel] Skin ID: {skin.Id} has no chromas.");
+            }
+
             SelectedChroma = null;
-            OnPropertyChanged(nameof(IsDefaultSelected));
-            OnPropertyChanged(nameof(KhadaViewerUrl));
             DownloadSkinCommand.NotifyCanExecuteChanged();
+            RefreshChromaSelections(null);
+        }
+
+        public bool CanDownload()
+        {
+            return UserCredits > 0;
         }
 
         [RelayCommand(CanExecute = nameof(CanDownload))]
@@ -76,6 +95,7 @@ namespace SkinHunterWPF.ViewModels
             IsLoading = true;
             var skinOrChromaName = IsDefaultSelected ? SelectedSkin?.Name : SelectedChroma?.Name;
             var idToDownload = IsDefaultSelected ? SelectedSkin?.Id : SelectedChroma?.Id;
+            Debug.WriteLine($"[SkinDetailViewModel] DownloadSkinAsync: Downloading '{skinOrChromaName}' (ID: {idToDownload})");
 
             await Task.Delay(1500);
 
@@ -88,31 +108,62 @@ namespace SkinHunterWPF.ViewModels
             CloseDialog();
         }
 
-        private bool CanDownload()
-        {
-            return UserCredits > 0;
-        }
 
         [RelayCommand]
         private void CloseDialog()
         {
+            Debug.WriteLine("[SkinDetailViewModel] CloseDialog called.");
             var mainViewModel = _serviceProvider.GetService<MainViewModel>();
-            if (mainViewModel?.CloseDialogCommand.CanExecute(null) ?? false)
+            mainViewModel?.CloseDialogCommand.Execute(null);
+        }
+
+        private void SetDefaultSelection()
+        {
+            if (SelectedChroma != null)
             {
-                mainViewModel.CloseDialogCommand.Execute(null);
+                SelectedChroma.IsSelected = false;
+            }
+            SelectedChroma = null;
+            RefreshChromaSelections(null);
+        }
+
+        [RelayCommand]
+        private void ToggleChromaSelection(Chroma? clickedChroma)
+        {
+            if (clickedChroma == null) return;
+
+            Debug.WriteLine($"[SkinDetailViewModel] ToggleChromaSelection called for Chroma ID: {clickedChroma.Id}");
+
+            if (SelectedChroma == clickedChroma)
+            {
+                Debug.WriteLine($"[SkinDetailViewModel] Deselecting Chroma ID: {clickedChroma.Id}");
+                SetDefaultSelection();
+            }
+            else
+            {
+                Debug.WriteLine($"[SkinDetailViewModel] Selecting Chroma ID: {clickedChroma.Id}");
+                if (SelectedChroma != null)
+                {
+                    SelectedChroma.IsSelected = false;
+                }
+                SelectedChroma = clickedChroma;
+                SelectedChroma.IsSelected = true;
+                RefreshChromaSelections(SelectedChroma);
             }
         }
 
-        [RelayCommand]
-        private void SelectDefault()
+        private void RefreshChromaSelections(Chroma? selected)
         {
-            SelectedChroma = null;
-        }
-
-        [RelayCommand]
-        private void SelectChroma(Chroma? chroma)
-        {
-            SelectedChroma = chroma;
+            foreach (var ch in AvailableChromas)
+            {
+                ch.IsSelected = (ch == selected);
+            }
+            var tempList = AvailableChromas.ToList();
+            AvailableChromas.Clear();
+            foreach (var item in tempList)
+            {
+                AvailableChromas.Add(item);
+            }
         }
     }
 }

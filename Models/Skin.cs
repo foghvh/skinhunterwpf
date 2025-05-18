@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using System.Collections.Generic;
-using System.Linq; // Required for Any()
+using System.Linq;
 
 namespace SkinHunterWPF.Models
 {
@@ -35,7 +35,7 @@ namespace SkinHunterWPF.Models
         public string? RarityImageUrl => RarityGemPath != null ? Services.CdragonDataService.GetAssetUrl(RarityGemPath) : null;
         public string RarityName => GetRarityNameFromPath(RarityGemPath);
         public int ChampionId => Id / 1000;
-        public bool HasChromas => Chromas?.Any() ?? false; // Use Linq.Any()
+        public bool HasChromas => Chromas?.Any() ?? false;
 
         private static string GetRarityNameFromPath(string? path)
         {

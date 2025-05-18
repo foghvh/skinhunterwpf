@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using SkinHunterWPF.Services;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Windows; // Required for MessageBox
+using System.Windows;
 
 namespace SkinHunterWPF.ViewModels
 {

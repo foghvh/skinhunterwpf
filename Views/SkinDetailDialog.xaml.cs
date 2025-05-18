@@ -21,7 +21,7 @@ namespace SkinHunterWPF.Views
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to open hyperlink: {ex.Message}");
+                Debug.WriteLine($"Failed to open hyperlink: {ex.Message}");
                 MessageBox.Show($"Could not open link: {e.Uri.AbsoluteUri}", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             e.Handled = true;

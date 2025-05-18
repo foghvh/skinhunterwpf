@@ -52,6 +52,18 @@
         "build": {
           "buildTransitive/net6.0/_._": {}
         }
+      },
+      "VirtualizingWrapPanel/2.1.2": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0-windows7.0/VirtualizingWrapPanel.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0-windows7.0/VirtualizingWrapPanel.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.WindowsDesktop.App.WPF"
+        ]
       }
     }
   },
@@ -150,12 +162,27 @@
         "microsoft.extensions.dependencyinjection.abstractions.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "VirtualizingWrapPanel/2.1.2": {
+      "sha512": "VnLF8XC6/Y+KsrQQSb986ymguGN2I3TyVV89yefS5AuOEShPjbZAP50+gEOyWWWoisKyrzlGk7z1I93t8P9P2Q==",
+      "type": "package",
+      "path": "virtualizingwrappanel/2.1.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/net462/VirtualizingWrapPanel.dll",
+        "lib/net6.0-windows7.0/VirtualizingWrapPanel.dll",
+        "virtualizingwrappanel.2.1.2.nupkg.sha512",
+        "virtualizingwrappanel.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     "net8.0-windows7.0": [
       "CommunityToolkit.Mvvm >= 8.2.2",
-      "Microsoft.Extensions.DependencyInjection >= 8.0.0"
+      "Microsoft.Extensions.DependencyInjection >= 8.0.0",
+      "VirtualizingWrapPanel >= 2.1.2"
     ]
   },
   "packageFolders": {
@@ -215,6 +242,10 @@
           "Microsoft.Extensions.DependencyInjection": {
             "target": "Package",
             "version": "[8.0.0, )"
+          },
+          "VirtualizingWrapPanel": {
+            "target": "Package",
+            "version": "[2.1.2, )"
           }
         },
         "imports": [

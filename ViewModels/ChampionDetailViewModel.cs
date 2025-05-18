@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Windows;
+using System;
 
 namespace SkinHunterWPF.ViewModels
 {
@@ -17,7 +18,7 @@ namespace SkinHunterWPF.ViewModels
         private ChampionDetail? _champion;
 
         [ObservableProperty]
-        private ObservableCollection<Skin> _skins = new();
+        private ObservableCollection<Skin> _skins = [];
 
         public ChampionDetailViewModel(INavigationService navigationService)
         {
@@ -27,18 +28,28 @@ namespace SkinHunterWPF.ViewModels
         [RelayCommand]
         public async Task LoadChampionAsync(int championId)
         {
-            if (Champion?.Id == championId && Skins.Any()) return;
+            if (Champion?.Id == championId && Skins.Count > 0)
+            {
+                Console.WriteLine($"DEBUG VM: Champion {championId} already loaded with {Skins.Count} skins. Skipping reload.");
+                IsLoading = false;
+                return;
+            }
 
             IsLoading = true;
             Skins.Clear();
             Champion = null;
 
+
             var details = await CdragonDataService.GetChampionDetailsAsync(championId);
+
             if (details != null)
             {
                 Champion = details;
-                if (details.Skins != null)
+
+                Skins.Clear();
+                if (details.Skins != null && details.Skins.Count > 0)
                 {
+                    int skinsAddedCount = 0;
                     foreach (var skin in details.Skins)
                     {
                         if (!skin.Name.Equals($"{details.Name}", StringComparison.OrdinalIgnoreCase) &&
@@ -46,8 +57,14 @@ namespace SkinHunterWPF.ViewModels
                             !skin.Name.Contains("Original", StringComparison.OrdinalIgnoreCase))
                         {
                             Skins.Add(skin);
+                            skinsAddedCount++;
                         }
                     }
+                    Console.WriteLine($"DEBUG VM: Loaded {skinsAddedCount} non-base/original skins for {Champion.Name}. Total in details.Skins: {details.Skins.Count}");
+                }
+                else
+                {
+                    Console.WriteLine($"DEBUG VM: details.Skins was null or empty for {Champion.Name}.");
                 }
             }
             else

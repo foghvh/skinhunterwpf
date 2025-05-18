@@ -7,52 +7,16 @@ using System.Threading.Tasks;
 using SkinHunterWPF.Models;
 using System.Linq;
 using System.IO;
+using System.Net.Http.Headers;
+using System.Diagnostics;
 
 namespace SkinHunterWPF.Services
 {
-    public class SupabaseChampionData
-    {
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
-
-        [JsonPropertyName("skins")]
-        public List<SupabaseSkinData>? Skins { get; set; }
-    }
-
-    public class SupabaseSkinData
-    {
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
-
-        [JsonPropertyName("chromas")]
-        public List<SupabaseChromaData>? Chromas { get; set; }
-    }
-
-    public class SupabaseChromaData
-    {
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
-
-        [JsonPropertyName("chromaPath")]
-        public string ChromaPath { get; set; } = string.Empty;
-
-        [JsonPropertyName("colors")]
-        public List<string>? Colors { get; set; }
-    }
-
-
     public static class CdragonDataService
     {
-        private static readonly HttpClient _httpClient = new();
+        private static readonly HttpClient _httpClient = CreateHttpClient();
+        private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
+
         private const string CdragonBaseUrl = "https://raw.communitydragon.org/latest";
         private const string DataRoot = $"{CdragonBaseUrl}/plugins/rcp-be-lol-game-data/global/default";
         private static string? _cdragonVersion;
@@ -61,6 +25,7 @@ namespace SkinHunterWPF.Services
         private const string SupabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kbHF3a2dld3p4eG1ic3F1dGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyMTM2NzcsImV4cCI6MjA0OTc4OTY3N30.qka6a71bavDeUQgy_BKoVavaClRQa_gT36Au7oO9AF0";
         private const string SupabaseStorageBasePath = "/storage/v1/object/public";
 
+        private static HttpClient CreateHttpClient() => new();
 
         private static async Task<string> GetCdragonVersionAsync()
         {
@@ -69,56 +34,87 @@ namespace SkinHunterWPF.Services
                 try
                 {
                     var metaUrl = $"{CdragonBaseUrl}/content-metadata.json";
-                    var response = await _httpClient.GetAsync(metaUrl);
+                    using var request = new HttpRequestMessage(HttpMethod.Get, metaUrl);
+                    using var response = await _httpClient.SendAsync(request);
                     response.EnsureSuccessStatusCode();
-                    var json = await response.Content.ReadAsStreamAsync();
-                    var metadata = await JsonSerializer.DeserializeAsync<Dictionary<string, JsonElement>>(json);
+                    using var json = await response.Content.ReadAsStreamAsync();
+                    var metadata = await JsonSerializer.DeserializeAsync<Dictionary<string, JsonElement>>(json, _jsonOptions);
                     if (metadata != null && metadata.TryGetValue("version", out var versionElement))
                     {
                         _cdragonVersion = versionElement.GetString() ?? "latest";
                     }
-                    else
-                    {
-                        _cdragonVersion = "latest";
-                    }
+                    else { _cdragonVersion = "latest"; }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error fetching CDRAGON version: {ex.Message}");
+                    Debug.WriteLine($"[CdragonDataService] Error fetching CDRAGON version: {ex.Message}");
                     _cdragonVersion = "latest";
                 }
             }
             return _cdragonVersion;
         }
 
-        private static async Task<T?> FetchDataAsync<T>(string fullUrl, HttpClient? client = null) where T : class
+        private static async Task<T?> FetchDataAsync<T>(string fullUrl, bool isSupabase = false) where T : class
         {
-            var httpClientToUse = client ?? _httpClient;
+            var httpClientToUse = _httpClient;
             try
             {
-                Console.WriteLine($"Fetching: {fullUrl}");
-                var request = new HttpRequestMessage(HttpMethod.Get, fullUrl);
-                if (client != null && client != _httpClient)
+                Debug.WriteLine($"[CdragonDataService] Fetching: {fullUrl}");
+                using var request = new HttpRequestMessage(HttpMethod.Get, fullUrl);
+                if (isSupabase)
                 {
                     request.Headers.TryAddWithoutValidation("apikey", SupabaseAnonKey);
                 }
 
-                var response = await httpClientToUse.SendAsync(request);
+                using var response = await httpClientToUse.SendAsync(request);
                 response.EnsureSuccessStatusCode();
-                var jsonStream = await response.Content.ReadAsStreamAsync();
-                return await JsonSerializer.DeserializeAsync<T>(jsonStream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                byte[] contentBytes = await response.Content.ReadAsByteArrayAsync();
+
+                if (contentBytes == null || contentBytes.Length == 0)
+                {
+                    Debug.WriteLine($"[CdragonDataService] Warning: Content bytes were null or empty for {Path.GetFileNameWithoutExtension(fullUrl)} despite 200 OK status.");
+                    return null;
+                }
+
+                using var memoryStream = new MemoryStream(contentBytes);
+                var result = await JsonSerializer.DeserializeAsync<T>(memoryStream, _jsonOptions);
+                if (result != null)
+                {
+                    Debug.WriteLine($"[CdragonDataService] Successfully deserialized {Path.GetFileNameWithoutExtension(fullUrl)} into {typeof(T).Name}.");
+                }
+                else
+                {
+                    Debug.WriteLine($"[CdragonDataService] Deserialization of {Path.GetFileNameWithoutExtension(fullUrl)} into {typeof(T).Name} resulted in null.");
+                }
+                return result;
             }
             catch (HttpRequestException httpEx)
             {
-                Console.WriteLine($"HTTP Error fetching {Path.GetFileName(fullUrl)}: {httpEx.Message} (Status: {httpEx.StatusCode})");
+                Debug.WriteLine($"[CdragonDataService] HTTP Error fetching {Path.GetFileNameWithoutExtension(fullUrl)}: {httpEx.Message} (Status: {httpEx.StatusCode})");
             }
             catch (JsonException jsonEx)
             {
-                Console.WriteLine($"JSON Error parsing {Path.GetFileName(fullUrl)}: {jsonEx.Message}");
+                Debug.WriteLine($"[CdragonDataService] JSON Error parsing {Path.GetFileNameWithoutExtension(fullUrl)}: {jsonEx.Message}. LineNumber: {jsonEx.LineNumber}, BytePositionInLine: {jsonEx.BytePositionInLine}, Path: {jsonEx.Path}");
+                try
+                {
+                    using var requestRetry = new HttpRequestMessage(HttpMethod.Get, fullUrl);
+                    if (isSupabase) { requestRetry.Headers.TryAddWithoutValidation("apikey", SupabaseAnonKey); }
+                    using var responseRetry = await httpClientToUse.SendAsync(requestRetry);
+                    if (responseRetry.IsSuccessStatusCode)
+                    {
+                        string text = await responseRetry.Content.ReadAsStringAsync();
+                        Debug.WriteLine($"[CdragonDataService] --- Raw JSON Content on Error for {Path.GetFileNameWithoutExtension(fullUrl)} ---\n{text}\n---------------------------------");
+                    }
+                }
+                catch (Exception readEx)
+                {
+                    Debug.WriteLine($"[CdragonDataService] Could not read response as string on JSON error: {readEx.Message}");
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Generic Error fetching {Path.GetFileName(fullUrl)}: {ex.Message}");
+                Debug.WriteLine($"[CdragonDataService] Generic Error fetching {Path.GetFileNameWithoutExtension(fullUrl)}: {ex.Message}");
             }
             return null;
         }
@@ -128,9 +124,7 @@ namespace SkinHunterWPF.Services
             string bucket = "api_json";
             string filePath = $"{championId}.json";
             string supabaseFileUrl = $"{SupabaseUrl}{SupabaseStorageBasePath}/{bucket}/{filePath}";
-
-            Console.WriteLine($"Attempting to fetch champion JSON from Supabase: {supabaseFileUrl}");
-            return await FetchDataAsync<SupabaseChampionData>(supabaseFileUrl);
+            return await FetchDataAsync<SupabaseChampionData>(supabaseFileUrl, isSupabase: true);
         }
 
 
@@ -139,95 +133,160 @@ namespace SkinHunterWPF.Services
             _ = await GetCdragonVersionAsync();
             var url = $"{DataRoot}/v1/champion-summary.json";
             var summaries = await FetchDataAsync<List<ChampionSummary>>(url);
-            return summaries?
-                .Where(c => c.Id != -1)
-                .OrderBy(c => c.Name)
-                .ToList();
+            return summaries?.Where(c => c.Id != -1).OrderBy(c => c.Name).ToList();
         }
 
         public static async Task<Dictionary<string, Skin>?> GetAllSkinsAsync()
         {
             _ = await GetCdragonVersionAsync();
             var url = $"{DataRoot}/v1/skins.json";
-            return await FetchDataAsync<Dictionary<string, Skin>>(url);
+            Debug.WriteLine($"[CdragonDataService] Attempting to fetch and parse all skins from: {url}");
+            var allSkins = await FetchDataAsync<Dictionary<string, Skin>>(url);
+            if (allSkins != null)
+            {
+                Debug.WriteLine($"[CdragonDataService] Successfully fetched and parsed {allSkins.Count} total skins from skins.json.");
+            }
+            else
+            {
+                Debug.WriteLine($"[CdragonDataService] Failed to fetch or parse skins.json. allSkins is null.");
+            }
+            return allSkins;
         }
 
         public static async Task<ChampionDetail?> GetChampionDetailsAsync(int championId)
         {
+            Debug.WriteLine($"[CdragonDataService] GetChampionDetailsAsync called for champion ID: {championId}");
             _ = await GetCdragonVersionAsync();
             var detailsUrl = $"{DataRoot}/v1/champions/{championId}.json";
             var championDetailWpf = await FetchDataAsync<ChampionDetail>(detailsUrl);
 
-            if (championDetailWpf == null) return null;
+            if (championDetailWpf == null)
+            {
+                Debug.WriteLine($"[CdragonDataService] Failed to load champion details for {championId} from Cdragon champions/{championId}.json. Returning null.");
+                return null;
+            }
 
             var allSkinsFromCdragon = await GetAllSkinsAsync();
             var championDataFromSupabase = await FetchChampionDataFromSupabaseAsync(championId);
 
-            var skinsForThisChampionWpf = new List<Skin>(); // Esta será la lista final para championDetailWpf.Skins
+            if (championDataFromSupabase == null)
+            {
+                Debug.WriteLine($"[CdragonDataService] WARNING: Failed to load champion data for {championId} from Supabase. Chroma data might be sourced only from Cdragon/skins.json.");
+            }
+            else
+            {
+                Debug.WriteLine($"[CdragonDataService] Successfully loaded champion data for {championId} from Supabase. Contains {championDataFromSupabase.Skins?.Count ?? 0} skin entries.");
+            }
+
+
+            var skinsForThisChampionWpf = new List<Skin>();
 
             if (allSkinsFromCdragon != null)
             {
-                // Iterar sobre las skins obtenidas del skins.json de CDRagon
-                foreach (var cdragonSkinObject in allSkinsFromCdragon.Values)
+                Debug.WriteLine($"[CdragonDataService] Processing skins for champion ID {championId} from {allSkinsFromCdragon.Count} total Cdragon skins.");
+                foreach (var cdragonSkinEntry in allSkinsFromCdragon.Where(kvp => kvp.Value.ChampionId == championId))
                 {
-                    if (cdragonSkinObject.ChampionId == championId)
+                    Skin cdragonSkinObject = cdragonSkinEntry.Value;
+                    string skinIdentifier = $"Skin ID: {cdragonSkinObject.Id} ('{cdragonSkinObject.Name}') for Champion ID: {championId}";
+                    Debug.WriteLine($"[CdragonDataService] Processing {skinIdentifier}");
+
+                    var currentWpfSkin = new Skin
                     {
-                        // 1. Crear una NUEVA instancia de nuestro modelo Skin (WPF) para esta skin
-                        var currentWpfSkin = new Skin
-                        {
-                            Id = cdragonSkinObject.Id,
-                            Name = cdragonSkinObject.Name,
-                            TilePath = cdragonSkinObject.TilePath,
-                            SplashPath = cdragonSkinObject.SplashPath,
-                            RarityGemPath = cdragonSkinObject.RarityGemPath,
-                            IsLegacy = cdragonSkinObject.IsLegacy,
-                            Description = cdragonSkinObject.Description
-                            // La lista de Chromas se inicializará si se encuentran datos en Supabase
-                        };
+                        Id = cdragonSkinObject.Id,
+                        Name = cdragonSkinObject.Name,
+                        TilePath = cdragonSkinObject.TilePath,
+                        SplashPath = cdragonSkinObject.SplashPath,
+                        RarityGemPath = cdragonSkinObject.RarityGemPath,
+                        IsLegacy = cdragonSkinObject.IsLegacy,
+                        Description = cdragonSkinObject.Description,
+                        Chromas = new List<Chroma>()
+                    };
 
-                        // 2. Buscar esta skin específica en los datos de Supabase por su ID
-                        if (championDataFromSupabase?.Skins != null)
-                        {
-                            var supabaseSkinData = championDataFromSupabase.Skins.FirstOrDefault(s => s.Id == currentWpfSkin.Id);
-
-                            // 3. Si la skin se encontró en Supabase Y tiene una lista de chromas
-                            if (supabaseSkinData?.Chromas != null && supabaseSkinData.Chromas.Any())
-                            {
-                                // Inicializar la lista de Chromas para currentWpfSkin
-                                currentWpfSkin.Chromas = new List<Chroma>();
-
-                                // Iterar sobre TODOS los chromas de esta skin específica de Supabase
-                                foreach (var supabaseChroma in supabaseSkinData.Chromas)
-                                {
-                                    if (supabaseChroma != null) // Asegurarse de que el objeto chroma no sea nulo
-                                    {
-                                        // Añadir cada chroma a la lista de currentWpfSkin
-                                        currentWpfSkin.Chromas.Add(new Chroma
-                                        {
-                                            Id = supabaseChroma.Id,
-                                            Name = supabaseChroma.Name,
-                                            ChromaPath = supabaseChroma.ChromaPath,
-                                            Colors = supabaseChroma.Colors
-                                        });
-                                    }
-                                    // Si supabaseChroma es null, se ignora (ya no hay un Console.WriteLine aquí para evitar ruido)
-                                }
-                                // En este punto, currentWpfSkin.Chromas debería tener todos los chromas no nulos de supabaseSkinData.Chromas
-                                // Console.WriteLine($"DEBUG: Skin '{currentWpfSkin.Name}' (ID: {currentWpfSkin.Id}) - ADDED {currentWpfSkin.Chromas.Count} chromas.");
-                            }
-                            // else: Si no hay chromas en Supabase, currentWpfSkin.Chromas permanecerá null (o como se inicialice en el modelo Skin)
-                        }
-                        // else: Si no hay datos de skins en Supabase, o la skin específica no se encontró,
-                        // currentWpfSkin.Chromas permanecerá null.
-
-                        // 4. Añadir la skin procesada (con o sin chromas) a la lista del campeón
-                        skinsForThisChampionWpf.Add(currentWpfSkin);
+                    var championJsonSkinInfo = championDetailWpf.Skins?.FirstOrDefault(s => s.Id == currentWpfSkin.Id);
+                    if (!string.IsNullOrWhiteSpace(championJsonSkinInfo?.Description))
+                    {
+                        currentWpfSkin.Description = championJsonSkinInfo.Description;
                     }
+
+                    SupabaseSkinData? supabaseSkinData = null;
+                    if (championDataFromSupabase?.Skins != null)
+                    {
+                        supabaseSkinData = championDataFromSupabase.Skins.FirstOrDefault(s => s.Id == currentWpfSkin.Id);
+                        if (supabaseSkinData == null)
+                        {
+                            Debug.WriteLine($"[CdragonDataService] {skinIdentifier}: No matching skin data found in Supabase champion data.");
+                        }
+                    }
+                    else if (championDataFromSupabase != null && championDataFromSupabase.Skins == null)
+                    {
+                        Debug.WriteLine($"[CdragonDataService] {skinIdentifier}: Supabase champion data loaded, but its 'Skins' list is null.");
+                    }
+
+
+                    bool chromasPopulatedFromSupabase = false;
+                    if (supabaseSkinData?.Chromas != null && supabaseSkinData.Chromas.Any())
+                    {
+                        Debug.WriteLine($"[CdragonDataService] {skinIdentifier}: Populating chromas from Supabase ({supabaseSkinData.Chromas.Count} found).");
+                        foreach (var supabaseChroma in supabaseSkinData.Chromas)
+                        {
+                            if (supabaseChroma != null)
+                            {
+                                currentWpfSkin.Chromas.Add(new Chroma
+                                {
+                                    Id = supabaseChroma.Id,
+                                    Name = supabaseChroma.Name,
+                                    ChromaPath = supabaseChroma.ChromaPath,
+                                    Colors = supabaseChroma.Colors != null ? new List<string>(supabaseChroma.Colors) : null
+                                });
+                                Debug.WriteLine($"[CdragonDataService] {skinIdentifier}: Added Supabase Chroma ID: {supabaseChroma.Id}, Name: '{supabaseChroma.Name}'");
+                            }
+                        }
+                        chromasPopulatedFromSupabase = true;
+                    }
+                    else if (supabaseSkinData?.Chromas != null && !supabaseSkinData.Chromas.Any())
+                    {
+                        Debug.WriteLine($"[CdragonDataService] {skinIdentifier}: Supabase skin data found, but its 'Chromas' list is empty.");
+                    }
+                    else if (supabaseSkinData == null && championDataFromSupabase != null)
+                    {
+                    }
+
+
+                    if (!chromasPopulatedFromSupabase && cdragonSkinObject.Chromas != null && cdragonSkinObject.Chromas.Any())
+                    {
+                        Debug.WriteLine($"[CdragonDataService] {skinIdentifier}: Supabase chromas not used or not found. Falling back to Cdragon/skins.json ({cdragonSkinObject.Chromas.Count} found).");
+                        foreach (var cdragonChroma in cdragonSkinObject.Chromas)
+                        {
+                            if (cdragonChroma != null && !currentWpfSkin.Chromas.Any(ch => ch.Id == cdragonChroma.Id))
+                            {
+                                currentWpfSkin.Chromas.Add(new Chroma
+                                {
+                                    Id = cdragonChroma.Id,
+                                    Name = cdragonChroma.Name,
+                                    ChromaPath = cdragonChroma.ChromaPath,
+                                    Colors = cdragonChroma.Colors != null ? new List<string>(cdragonChroma.Colors) : null
+                                });
+                                Debug.WriteLine($"[CdragonDataService] {skinIdentifier}: Added Cdragon/skins.json Chroma ID: {cdragonChroma.Id}, Name: '{cdragonChroma.Name}'");
+                            }
+                        }
+                    }
+                    else if (!chromasPopulatedFromSupabase)
+                    {
+                        Debug.WriteLine($"[CdragonDataService] {skinIdentifier}: No chromas found from Supabase, and Cdragon/skins.json also has no chromas (or 'Chromas' list is null).");
+                    }
+
+                    Debug.WriteLine($"[CdragonDataService] {skinIdentifier}: Final chromas count for skin: {currentWpfSkin.Chromas.Count}");
+                    currentWpfSkin.Chromas = currentWpfSkin.Chromas.OrderBy(c => c.Id).ToList();
+                    skinsForThisChampionWpf.Add(currentWpfSkin);
                 }
             }
+            else
+            {
+                Debug.WriteLine($"[CdragonDataService] WARNING: allSkinsFromCdragon (cdn/v1/skins.json) was null. Cannot process any skins for champion {championId}.");
+            }
 
-            // 5. Asignar la lista construida de skins al objeto ChampionDetail principal
             championDetailWpf.Skins = skinsForThisChampionWpf.OrderBy(s => s.Name).ToList();
+            Debug.WriteLine($"[CdragonDataService] GetChampionDetailsAsync for champion ID {championId} finished. Total skins populated: {championDetailWpf.Skins.Count}");
             return championDetailWpf;
         }
 
@@ -248,7 +307,7 @@ namespace SkinHunterWPF.Services
             const string apiAssetPrefix = "/lol-game-data/assets";
             if (relativePath.StartsWith(apiAssetPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                var pathSegment = relativePath.Substring(apiAssetPrefix.Length).TrimStart('/');
+                var pathSegment = relativePath[apiAssetPrefix.Length..].TrimStart('/');
                 return $"{DataRoot}/{pathSegment}".ToLowerInvariant();
             }
             return $"{DataRoot}/{relativePath.TrimStart('/')}".ToLowerInvariant();

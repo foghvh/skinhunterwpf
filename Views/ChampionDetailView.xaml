@@ -22,7 +22,7 @@
 
             <StackPanel Grid.Row="0" Margin="0,10,0,20" Orientation="Horizontal" HorizontalAlignment="Center"
                         Visibility="{Binding Champion, Converter={StaticResource NullToVisibilityConverter}}">
-                <Image Source="{Binding Champion.ImageUrl}" Width="80" Height="80" Stretch="Uniform" Margin="0,-43,15,0"/>
+                <Image Source="{Binding Champion.ChampionImageSource}" Width="80" Height="80" Stretch="Uniform" Margin="0,-43,15,0" RenderOptions.BitmapScalingMode="HighQuality"/>
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock Text="{Binding Champion.Name}" Foreground="{StaticResource ForegroundColor}" FontSize="24" FontWeight="Bold"/>
                     <TextBlock Text="{Binding Champion.Title}" Foreground="{StaticResource ForegroundLightGray}" FontSize="16" FontStyle="Italic"/>

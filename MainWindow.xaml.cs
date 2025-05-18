@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using System; // Required for EventArgs
-using System.Windows.Shapes; // Required for Path
+using System;
+using System.Windows.Shapes;
 
 namespace SkinHunterWPF
 {
@@ -35,18 +35,16 @@ namespace SkinHunterWPF
 
         protected override void OnStateChanged(EventArgs e)
         {
-            // Find the Path element by its Name within the visual tree or template if necessary
-            // For simplicity, assuming MaximizeIcon is directly accessible (might need adjustment)
-            var maximizeButton = FindName("MaximizeIcon") as Path; // Use FindName or VisualTreeHelper
-            if (maximizeButton != null)
+            var maximizeIcon = MaximizeIconPath;
+            if (maximizeIcon != null)
             {
                 if (this.WindowState == WindowState.Maximized)
                 {
-                    maximizeButton.Data = System.Windows.Media.Geometry.Parse("M2,0 H10 V8 H8 V10 H0 V2 H2 Z M3,3 V7 H7 V3 Z");
+                    maximizeIcon.Data = System.Windows.Media.Geometry.Parse("M2,0 H8 V2 H0 V10 H2 V8 H10 V2 H8 Z M3,3 V7 H7 V3Z");
                 }
                 else
                 {
-                    maximizeButton.Data = System.Windows.Media.Geometry.Parse("M0,0 H10 V10 H0 Z M2,2 V8 H8 V2 Z");
+                    maximizeIcon.Data = System.Windows.Media.Geometry.Parse("M0,0 H10 V10 H0 Z M2,2 V8 H8 V2 Z");
                 }
             }
             base.OnStateChanged(e);

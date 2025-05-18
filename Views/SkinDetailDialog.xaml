@@ -10,6 +10,57 @@
              d:DataContext="{d:DesignInstance Type=vm:SkinDetailViewModel, IsDesignTimeCreatable=False}"
              Width="850" MaxHeight="650" d:DesignWidth="850">
 
+    <UserControl.Resources>
+        <DataTemplate x:Key="ChromaCircleTemplate" DataType="{x:Type m:Chroma}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Ellipse Width="50" Height="50" Stroke="{StaticResource ForegroundGray}" StrokeThickness="1" Fill="{Binding ColorBrush}" Margin="0,5,0,5"/>
+                <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,0,0,5" MaxWidth="75" TextAlignment="Center" TextWrapping="Wrap"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="ChromaImageTemplate" DataType="{x:Type m:Chroma}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Image Source="{Binding ImageUrl}" Width="60" Height="60" Stretch="Uniform" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,0,0,5" MaxWidth="75" TextAlignment="Center" TextWrapping="Wrap"/>
+            </StackPanel>
+        </DataTemplate>
+        <Style x:Key="RadioButtonCardStyle" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
+            <Setter Property="Background" Value="{StaticResource CardBackgroundColor}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Width" Value="95"/>
+            <Setter Property="Height" Value="105"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource BorderAccentColor}"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource ButtonHoverBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <converters:ChromaToButtonTextConverter x:Key="ChromaToButtonTextConverter"/>
+    </UserControl.Resources>
+
     <Border Background="#1F1F1F" CornerRadius="5" BorderBrush="{StaticResource CardBorderColor}" BorderThickness="1">
         <Grid Margin="20">
             <Grid.ColumnDefinitions>
@@ -49,16 +100,16 @@
             </StackPanel>
 
             <DockPanel Grid.Row="1" Grid.Column="1">
-                <TextBlock DockPanel.Dock="Top" Margin="0,0,0,10" Foreground="{StaticResource ForegroundLightGray}">
-                    <Run Text="View skin on "/>
-                    <Hyperlink NavigateUri="{Binding KhadaViewerUrl}" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FF77AADD">
-                         <Run Text="Model viewer"/>
-                    </Hyperlink>
-                    <TextBlock Text="ℹ" Foreground="DodgerBlue" ToolTip="Preview the in-game appearance of the skin." Margin="5,0,0,0" VerticalAlignment="Center"/>
-                </TextBlock>
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Margin="0,0,0,10" Foreground="{StaticResource ForegroundLightGray}">
+                        <Run Text="View skin on "/>
+                        <Hyperlink NavigateUri="{Binding KhadaViewerUrl}" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FF77AADD">
+                            <Run Text="Model viewer"/>
+                        </Hyperlink>
+                    </TextBlock>
+                    <TextBlock Margin="0,0,0,10" Foreground="DodgerBlue" Text="ℹ" ToolTip="Preview the in-game appearance of the skin."/>
+                </StackPanel>
                 <Separator DockPanel.Dock="Top" Margin="0,0,0,15" Background="{StaticResource CardBorderColor}"/>
-
-                <TextBlock DockPanel.Dock="Top" Text="Chromas" Foreground="{StaticResource ForegroundColor}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
 
                 <Border DockPanel.Dock="Bottom" Margin="0,15,0,0" Background="#4417A2B8" BorderBrush="#FF17A2B8" BorderThickness="1" Padding="8,5" CornerRadius="3">
                     <TextBlock FontSize="12" Foreground="#FFA6D9E2">
@@ -67,80 +118,65 @@
                     </TextBlock>
                 </Border>
 
-                <TabControl Padding="0" Margin="0,5,0,0">
-                    <TabItem Header="Circles">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="300" Padding="5" HorizontalScrollBarVisibility="Disabled">
-                            <WrapPanel Orientation="Horizontal" ItemWidth="100" ItemHeight="110">
-                                <RadioButton GroupName="ChromaSelectionCircles" Style="{StaticResource RadioButtonCardStyle}"
-                                              IsChecked="{Binding IsDefaultSelected, Mode=OneWay}"
-                                              Command="{Binding SelectDefaultCommand}">
-                                    <StackPanel Width="90" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Path Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z M17,15.59L15.59,17L12,13.41L8.41,17L7,15.59L10.59,12L7,8.41L8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59Z"
-                                              Fill="{StaticResource ForegroundGray}" Width="40" Height="40" Stretch="Uniform" Margin="0,10,0,5"/>
-                                        <TextBlock Text="Default" HorizontalAlignment="Center" FontSize="11" Margin="0,5,0,0"/>
-                                    </StackPanel>
-                                </RadioButton>
-
-                                <ItemsControl ItemsSource="{Binding AvailableChromas}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <WrapPanel Orientation="Horizontal"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type m:Chroma}">
-                                            <RadioButton GroupName="ChromaSelectionCircles" Style="{StaticResource RadioButtonCardStyle}"
-                                                         IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                         Command="{Binding DataContext.SelectChromaCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                                         CommandParameter="{Binding}">
-                                                <StackPanel Width="90" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                    <Ellipse Width="60" Height="60" Stroke="{StaticResource ForegroundGray}" StrokeThickness="1" Fill="{Binding ColorBrush}" Margin="0,5,0,5"/>
-                                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,0,0,5"/>
-                                                </StackPanel>
-                                            </RadioButton>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </WrapPanel>
-                        </ScrollViewer>
-                    </TabItem>
-                    <TabItem Header="Images">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="300" Padding="5" HorizontalScrollBarVisibility="Disabled">
-                            <WrapPanel Orientation="Horizontal" ItemWidth="100" ItemHeight="110">
-                                <RadioButton GroupName="ChromaSelectionImages" Style="{StaticResource RadioButtonCardStyle}"
-                                             IsChecked="{Binding IsDefaultSelected, Mode=OneWay}"
-                                             Command="{Binding SelectDefaultCommand}">
-                                    <StackPanel Width="90" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Path Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z M17,15.59L15.59,17L12,13.41L8.41,17L7,15.59L10.59,12L7,8.41L8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59Z"
-                                              Fill="{StaticResource ForegroundGray}" Width="40" Height="40" Stretch="Uniform" Margin="0,10,0,5"/>
-                                        <TextBlock Text="Default" HorizontalAlignment="Center" FontSize="11" Margin="0,5,0,0"/>
-                                    </StackPanel>
-                                </RadioButton>
-
-                                <ItemsControl ItemsSource="{Binding AvailableChromas}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <WrapPanel Orientation="Horizontal"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type m:Chroma}">
-                                            <RadioButton GroupName="ChromaSelectionImages" Style="{StaticResource RadioButtonCardStyle}"
-                                                         IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                         Command="{Binding DataContext.SelectChromaCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                                         CommandParameter="{Binding}">
-                                                <StackPanel Width="90" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                    <Image Source="{Binding ImageUrl}" Width="70" Height="70" Stretch="Uniform" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,0,0,5"/>
-                                                </StackPanel>
-                                            </RadioButton>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </WrapPanel>
-                        </ScrollViewer>
-                    </TabItem>
-                </TabControl>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Chromas" Foreground="{StaticResource ForegroundColor}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <TabControl Padding="0" Margin="0,0,0,0">
+                        <TabItem Header="Circles">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Select a variation to download." Foreground="{StaticResource ForegroundLightGray}" FontSize="12" Margin="0,8,0,8" FontStyle="Italic"/>
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="260" Padding="5,0,5,0" HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl ItemsSource="{Binding AvailableChromas}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Horizontal" ItemWidth="95" ItemHeight="105"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type m:Chroma}">
+                                                <RadioButton GroupName="ChromaSelectionCircles" Style="{StaticResource RadioButtonCardStyle}"
+                                                             IsChecked="{Binding IsSelected, Mode=OneWay}"
+                                                             Command="{Binding DataContext.ToggleChromaSelectionCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                             CommandParameter="{Binding}">
+                                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                        <Ellipse Width="50" Height="50" Stroke="{StaticResource ForegroundGray}" StrokeThickness="1" Fill="{Binding ColorBrush}" Margin="0,5,0,5"/>
+                                                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,0,0,5" MaxWidth="75" TextAlignment="Center" TextWrapping="Wrap"/>
+                                                    </StackPanel>
+                                                </RadioButton>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </TabItem>
+                        <TabItem Header="Images">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Select a variation to download." Foreground="{StaticResource ForegroundLightGray}" FontSize="12" Margin="0,8,0,8" FontStyle="Italic"/>
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="260" Padding="5,0,5,0" HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl ItemsSource="{Binding AvailableChromas}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Horizontal" ItemWidth="95" ItemHeight="105"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type m:Chroma}">
+                                                <RadioButton GroupName="ChromaSelectionImages" Style="{StaticResource RadioButtonCardStyle}"
+                                                             IsChecked="{Binding IsSelected, Mode=OneWay}"
+                                                             Command="{Binding DataContext.ToggleChromaSelectionCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                             CommandParameter="{Binding}">
+                                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                        <Image Source="{Binding ImageUrl}" Width="60" Height="60" Stretch="Uniform" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,0,0,5" MaxWidth="75" TextAlignment="Center" TextWrapping="Wrap"/>
+                                                    </StackPanel>
+                                                </RadioButton>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </TabItem>
+                    </TabControl>
+                </StackPanel>
             </DockPanel>
 
             <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="0,20,0,0">

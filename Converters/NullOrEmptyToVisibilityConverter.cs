@@ -35,7 +35,7 @@ namespace SkinHunterWPF.Converters
             {
                 collapseWhenNullOrEmpty = paramBool;
             }
-            else if (parameter is bool directBool) // Allow direct boolean parameter
+            else if (parameter is bool directBool)
             {
                 collapseWhenNullOrEmpty = directBool;
             }
