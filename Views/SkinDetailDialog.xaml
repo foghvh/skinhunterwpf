@@ -107,7 +107,8 @@
                             <Run Text="Model viewer"/>
                         </Hyperlink>
                     </TextBlock>
-                    <TextBlock Margin="0,0,0,10" Foreground="DodgerBlue" Text="ℹ" ToolTip="Preview the in-game appearance of the skin."/>
+
+                    <!-- <TextBlock Margin="0,0,0,10" Foreground="DodgerBlue" Text="ℹ" ToolTip="Preview the in-game appearance of the skin."/>!-->
                 </StackPanel>
                 <Separator DockPanel.Dock="Top" Margin="0,0,0,15" Background="{StaticResource CardBorderColor}"/>
 

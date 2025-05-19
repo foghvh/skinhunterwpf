@@ -234,14 +234,14 @@
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Foreground" Value="{StaticResource BorderAccentColor}"/>
-                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{StaticResource ForegroundLightGray}"/>
+                <Setter Property="Background" Value="{StaticResource ForegroundLightGray}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ProgressBar" >
                             <Grid>
-                                <Ellipse Stroke="{StaticResource BorderAccentColor}" StrokeThickness="3" Opacity="0.3"/>
-                                <Ellipse Name="PART_Indicator" Stroke="{StaticResource BorderAccentColor}" StrokeThickness="3" StrokeDashArray="3, 2" StrokeDashCap="Round">
+                                <Ellipse Stroke="{StaticResource ForegroundLightGray}" StrokeThickness="3" Opacity="0.3"/>
+                                <Ellipse Name="PART_Indicator" Stroke="{StaticResource ForegroundLightGray}" StrokeThickness="3" StrokeDashArray="20, 20" StrokeDashCap="Round">
                                     <Ellipse.RenderTransform>
                                         <RotateTransform Angle="0" CenterX="25" CenterY="25" />
                                     </Ellipse.RenderTransform>

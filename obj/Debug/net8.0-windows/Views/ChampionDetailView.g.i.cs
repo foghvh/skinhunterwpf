@@ -12,7 +12,6 @@
 using SkinHunterWPF.Converters;
 using SkinHunterWPF.Models;
 using SkinHunterWPF.ViewModels;
-using SkinHunterWPF.Views;
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -56,7 +55,7 @@ namespace SkinHunterWPF.Views {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/SkinHunterWPF;V1.0.0.0;component/views/championdetailview.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/SkinHunterWPF;component/views/championdetailview.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Views\ChampionDetailView.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

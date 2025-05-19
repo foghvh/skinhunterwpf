@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-C:\Users\dev\source\repos\SkinHunterWPF\obj\Debug\net8.0-windows\
+C:\Users\asd\Desktop\skinhunterwpf\obj\Debug\net8.0-windows\
 SkinHunterWPF
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
-C:\Users\dev\source\repos\SkinHunterWPF\App.xaml
+C:\Users\asd\Desktop\skinhunterwpf\App.xaml
 4-1186948487
 
 30-1636819398
-202-2105051420
+202-248776495
 MainWindow.xaml;Views\ChampionDetailView.xaml;Views\ChampionGridView.xaml;Views\SkinDetailDialog.xaml;
 
 False
