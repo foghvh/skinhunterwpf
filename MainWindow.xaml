@@ -14,10 +14,10 @@
         WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResizeWithGrip">
 
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="35" ResizeBorderThickness="5" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
+        <WindowChrome CaptionHeight="35" ResizeBorderThickness="8" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 
-    <Border BorderBrush="{StaticResource FyneSubtleBorderColor}" BorderThickness="0">
+    <Border >
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -25,34 +25,74 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Background="{StaticResource HeaderBackgroundColor}" Height="60" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
-                <Grid Margin="5,0">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                        <Image Source="pack://application:,,,/Assets/logo.png" Height="45" VerticalAlignment="Center" Margin="5,0,5,0"/>
-                        <TextBlock Text="skin-hunter" Foreground="{StaticResource ForegroundColor}" VerticalAlignment="Center" FontSize="24" FontWeight="SemiBold"/>
-                    </StackPanel>
+            <Border Grid.Row="0" Background="{StaticResource HeaderBackgroundColor}" Height="60" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown" CornerRadius="7,7,0,0">
+                <DockPanel LastChildFill="True">
+                    <Border DockPanel.Dock="Bottom" Height="2" Background="{StaticResource BorderAccentColor}" Margin="1,0,1,0" />
+                    <Grid Margin="10,0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Image Source="pack://application:,,,/Assets/icon.ico" Height="35" VerticalAlignment="Center" Margin="5,0,10,0" RenderOptions.BitmapScalingMode="Fant"/>
+                            <TextBlock Text="SKIN-HUNTER" Foreground="{StaticResource ForegroundColor}" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" FontFamily="Arial Black"/>
+                        </StackPanel>
 
-                    <TextBlock Text="Loading..." 
-                               Visibility="{Binding CurrentViewModel.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}"
-                               Foreground="{StaticResource ForegroundGray}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12"/>
+                        <TextBlock Text="initializing"
+                                   Visibility="{Binding CurrentViewModel.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}"
+                                   Foreground="{StaticResource ForegroundGray}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontStyle="Italic"/>
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Button Style="{StaticResource TitleBarButtonStyle}" Click="MinimizeButton_Click" ToolTip="Minimize" >
-                            <Path Data="M0,5 H10 V7 H0 Z" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Width="10" Height="10" Stretch="None"/>
-                        </Button>
-                        <Button Style="{StaticResource TitleBarButtonStyle}" Click="MaximizeButton_Click" ToolTip="Maximize / Restore">
-                            <Path x:Name="MaximizeIconPath" Data="M0,0 H10 V10 H0 Z M2,2 V8 H8 V2 Z" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Width="10" Height="10" Stretch="None"/>
-                        </Button>
-                        <Button Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click" ToolTip="Close">
-                            <Path Data="M0,0 L10,10 M10,0 L0,10" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" Width="10" Height="10" Stretch="None"/>
-                        </Button>
-                    </StackPanel>
-                </Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Button Style="{StaticResource TitleBarButtonStyle}" Click="MinimizeButton_Click" ToolTip="Minimize" >
+                                <Path Data="M0,5 H10 V7 H0 Z" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Width="10" Height="10" Stretch="None"/>
+                            </Button>
+                            <Button x:Name="MaximizeButton" Style="{StaticResource TitleBarButtonStyle}" Click="MaximizeButton_Click" ToolTip="Maximize / Restore">
+                                <Path x:Name="MaximizeIconPath" Data="M0,0 H10 V10 H0 Z M2,2 V8 H8 V2 Z" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Width="10" Height="10" Stretch="None"/>
+                            </Button>
+                            <Button Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click" ToolTip="Close">
+                                <Path Data="M0,0 L10,10 M10,0 L0,10" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5" Width="10" Height="10" Stretch="None"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </DockPanel>
             </Border>
 
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-                          Padding="0" Focusable="False">
+                          Padding="10,0,10,10" Focusable="False">
                 <ContentControl Content="{Binding CurrentViewModel}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                    <!-- Animación eliminada temporalmente para diagnosticar problemas de visibilidad -->
+                    <!--<ContentControl.Style>
+                        <Style TargetType="ContentControl">
+                            <Setter Property="Opacity" Value="0"/>
+                            <Setter Property="RenderTransform">
+                                <Setter.Value>
+                                    <TranslateTransform Y="20"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentViewModel.IsLoading}" Value="False">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.35"/>
+                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" To="0" Duration="0:0:0.35">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseOut"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CurrentViewModel.IsLoading}" Value="True">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.1"/>
+                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" To="20" Duration="0:0:0.01"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>-->
                     <ContentControl.Resources>
                         <DataTemplate DataType="{x:Type vm:ChampionGridViewModel}">
                             <v:ChampionGridView/>
@@ -64,20 +104,23 @@
                 </ContentControl>
             </ScrollViewer>
 
-            <Border Grid.Row="2" Background="{StaticResource HeaderBackgroundColor}" BorderThickness="0,1,0,0" BorderBrush="{StaticResource FyneSubtleBorderColor}" Padding="0,5">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Style="{StaticResource NavButtonStyle}" Content="Champions" Command="{Binding NavigateToChampionsCommand}" 
-                            Tag="M3,3H11V11H3V3M13,3H21V11H13V3M3,13H11V21H3V13M13,13H21V21H13V13Z"/>
-                    <Button Style="{StaticResource NavButtonStyle}" Content="Search" Command="{Binding OpenSearchCommand}" 
-                            Tag="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L21.5,20L20,21.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"/>
-                    <Button Style="{StaticResource NavButtonStyle}" Content="Installed" Command="{Binding NavigateToInstalledCommand}" 
-                            Tag="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
-                    <Button Style="{StaticResource NavButtonStyle}" Content="Profile" Command="{Binding OpenProfileCommand}" 
-                            Tag="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
-                </StackPanel>
+            <Border Grid.Row="2" Background="{StaticResource HeaderBackgroundColor}" Padding="0,5" CornerRadius="0,0,7,7">
+                <DockPanel LastChildFill="True">
+                    <Border DockPanel.Dock="Top" Height="2" Background="{StaticResource BorderAccentColor}" Margin="1,0,1,0"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Style="{StaticResource NavButtonStyle}" Content="Champions" Command="{Binding NavigateToChampionsCommand}"
+                                Tag="M3,3H11V11H3V3M13,3H21V11H13V3M3,13H11V21H3V13M13,13H21V21H13V13Z"/>
+                        <Button Style="{StaticResource NavButtonStyle}" Content="Search" Command="{Binding OpenSearchCommand}"
+                                Tag="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L21.5,20L20,21.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"/>
+                        <Button Style="{StaticResource NavButtonStyle}" Content="Installed" Command="{Binding NavigateToInstalledCommand}"
+                                Tag="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                        <Button Style="{StaticResource NavButtonStyle}" Content="Profile" Command="{Binding OpenProfileCommand}"
+                                Tag="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                    </StackPanel>
+                </DockPanel>
             </Border>
 
-            <Grid Grid.Row="0" Grid.RowSpan="3" Background="#CC000000"
+            <Grid Grid.Row="0" Grid.RowSpan="3" Background="#DD1A1A1A"
                   Visibility="{Binding DialogViewModel, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
                 <ContentControl Content="{Binding DialogViewModel}" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <ContentControl.Resources>

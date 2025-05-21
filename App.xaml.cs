@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SkinHunterWPF.Services;
 using SkinHunterWPF.ViewModels;
-using System.Windows;
 using System;
+using System.Windows;
 
 namespace SkinHunterWPF
 {
-    public partial class App : Application
+    public partial class App : System.Windows.Application
     {
         public static IServiceProvider? ServiceProvider { get; private set; }
 
@@ -26,7 +26,7 @@ namespace SkinHunterWPF
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error fatal durante el inicio:\n\n{ex.ToString()}",
+                System.Windows.MessageBox.Show($"Error fatal durante el inicio:\n\n{ex.ToString()}",
                                 "Error de Inicio",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);

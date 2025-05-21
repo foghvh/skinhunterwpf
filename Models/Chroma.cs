@@ -22,15 +22,15 @@ namespace SkinHunterWPF.Models
         public string ImageUrl => Services.CdragonDataService.GetAssetUrl(ChromaPath);
 
         [JsonIgnore]
-        public Brush? ColorBrush
+        public System.Windows.Media.Brush? ColorBrush
         {
             get
             {
-                if (Colors == null || Colors.Count == 0) return Brushes.Gray;
+                if (Colors == null || Colors.Count == 0) return System.Windows.Media.Brushes.Gray;
                 if (Colors.Count == 1)
                 {
-                    try { return new SolidColorBrush((Color)ColorConverter.ConvertFromString(Colors[0])); }
-                    catch { return Brushes.Gray; }
+                    try { return new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(Colors[0])); }
+                    catch { return System.Windows.Media.Brushes.Gray; }
                 }
                 try
                 {
@@ -39,11 +39,11 @@ namespace SkinHunterWPF.Models
                         StartPoint = new System.Windows.Point(0, 0.5),
                         EndPoint = new System.Windows.Point(1, 0.5)
                     };
-                    gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString(Colors[0]), 0.0));
-                    gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString(Colors[1]), 1.0));
+                    gradient.GradientStops.Add(new GradientStop((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(Colors[0]), 0.0));
+                    gradient.GradientStops.Add(new GradientStop((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(Colors[1]), 1.0));
                     return gradient;
                 }
-                catch { return Brushes.Gray; }
+                catch { return System.Windows.Media.Brushes.Gray; }
             }
         }
 

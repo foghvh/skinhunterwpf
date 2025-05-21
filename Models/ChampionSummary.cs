@@ -8,9 +8,9 @@ using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+// No se necesita 'using System.Windows;' si se califica Application.Current
 
 namespace SkinHunterWPF.Models
 {
@@ -139,7 +139,7 @@ namespace SkinHunterWPF.Models
 
             if (!token.IsCancellationRequested)
             {
-                Application.Current.Dispatcher.Invoke(() =>
+                System.Windows.Application.Current.Dispatcher.Invoke(() => // Calificado aquí
                 {
                     if (!token.IsCancellationRequested)
                     {

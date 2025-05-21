@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.ComponentModel;
 using System;
-using System.Windows;
+using System.Windows; // Se mantiene para MessageBoxButton, MessageBoxImage
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Threading;
@@ -41,13 +41,13 @@ namespace SkinHunterWPF.ViewModels
 
         partial void OnSearchTextChanged(string? value)
         {
-            Application.Current?.Dispatcher.InvokeAsync(() => ChampionsView.Refresh(), DispatcherPriority.Background);
+            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() => ChampionsView.Refresh(), DispatcherPriority.Background); // Calificado aquí
         }
 
         partial void OnSelectedRoleChanged(string? value)
         {
             Debug.WriteLine($"[ChampionGridViewModel] Selected Role Changed: {value}");
-            Application.Current?.Dispatcher.InvokeAsync(() => ChampionsView.Refresh(), DispatcherPriority.Background);
+            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() => ChampionsView.Refresh(), DispatcherPriority.Background); // Calificado aquí
         }
 
         private bool FilterChampions(object item)
@@ -114,7 +114,7 @@ namespace SkinHunterWPF.ViewModels
             {
                 Debug.WriteLine("[ChampionGridViewModel] Champions and Roles likely loaded. Forcing UI Refresh.");
                 IsLoading = true;
-                await Application.Current.Dispatcher.InvokeAsync(() => {
+                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { // Calificado aquí
                     PopulateRoles();
                     ChampionsView.Refresh();
                 }, DispatcherPriority.DataBind);
@@ -146,7 +146,7 @@ namespace SkinHunterWPF.ViewModels
                 }
                 Debug.WriteLine($"[ChampionGridViewModel] Added {_allChampions.Count} champions to collection.");
 
-                await Application.Current.Dispatcher.InvokeAsync(() => {
+                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { // Calificado aquí
                     PopulateRoles();
                     ChampionsView.Refresh();
                     Debug.WriteLine("[ChampionGridViewModel] Roles populated and ChampionsView refreshed.");
@@ -155,8 +155,8 @@ namespace SkinHunterWPF.ViewModels
             else
             {
                 Debug.WriteLine("[ChampionGridViewModel] Failed to load champions from service.");
-                Application.Current?.Dispatcher.Invoke(() => {
-                    MessageBox.Show("Failed to load champions.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.Application.Current?.Dispatcher.Invoke(() => { // Calificado aquí
+                    System.Windows.MessageBox.Show("Failed to load champions.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); // Calificado aquí
                 });
             }
             IsLoading = false;

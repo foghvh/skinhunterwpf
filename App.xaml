@@ -7,31 +7,24 @@
             <ResourceDictionary.MergedDictionaries>
             </ResourceDictionary.MergedDictionaries>
 
-            <Color x:Key="FyneBackgroundColorValue">#1E1E1E</Color>
-            <Color x:Key="FyneForegroundColorValue">#E0E0E0</Color>
-            <Color x:Key="FyneAccentColorValue">#007ACC</Color>
-            <Color x:Key="FyneCardBackgroundColorValue">#282828</Color>
-            <Color x:Key="FyneSubtleBorderColorValue">#3A3A3A</Color>
-            <Color x:Key="FyneHoverBackgroundColorValue">#333333</Color>
+            <Color x:Key="BaseBackgroundColorValue">#1E1E1E</Color>
+            <Color x:Key="BaseForegroundColorValue">#E0E0E0</Color>
+            <Color x:Key="BaseAccentColorValue">#007ACC</Color>
+            <Color x:Key="BaseCardBackgroundColorValue">#282828</Color>
+            <Color x:Key="BaseSubtleBorderColorValue">#3A3A3A</Color>
+            <Color x:Key="BaseHoverBackgroundColorValue">#333333</Color>
 
-            <SolidColorBrush x:Key="FyneBackgroundColor" Color="{StaticResource FyneBackgroundColorValue}"/>
-            <SolidColorBrush x:Key="FyneForegroundColor" Color="{StaticResource FyneForegroundColorValue}"/>
-            <SolidColorBrush x:Key="FyneAccentColor" Color="{StaticResource FyneAccentColorValue}"/>
-            <SolidColorBrush x:Key="FyneCardBackgroundColor" Color="{StaticResource FyneCardBackgroundColorValue}"/>
-            <SolidColorBrush x:Key="FyneSubtleBorderColor" Color="{StaticResource FyneSubtleBorderColorValue}"/>
-            <SolidColorBrush x:Key="FyneHoverBackgroundColor" Color="{StaticResource FyneHoverBackgroundColorValue}"/>
-
-            <SolidColorBrush x:Key="WindowBackgroundColor" Color="{StaticResource FyneBackgroundColorValue}"/>
+            <SolidColorBrush x:Key="WindowBackgroundColor" Color="{StaticResource BaseBackgroundColorValue}"/>
             <SolidColorBrush x:Key="HeaderBackgroundColor" Color="#181818"/>
-            <SolidColorBrush x:Key="BorderAccentColor" Color="{StaticResource FyneAccentColorValue}"/>
-            <SolidColorBrush x:Key="ForegroundColor" Color="{StaticResource FyneForegroundColorValue}"/>
+            <SolidColorBrush x:Key="BorderAccentColor" Color="{StaticResource BaseAccentColorValue}"/>
+            <SolidColorBrush x:Key="ForegroundColor" Color="{StaticResource BaseForegroundColorValue}"/>
             <SolidColorBrush x:Key="ForegroundLightGray" Color="#B0B0B0"/>
             <SolidColorBrush x:Key="ForegroundGray" Color="#888888"/>
-            <SolidColorBrush x:Key="CardBackgroundColor" Color="{StaticResource FyneCardBackgroundColorValue}"/>
-            <SolidColorBrush x:Key="CardBorderColor" Color="{StaticResource FyneSubtleBorderColorValue}"/>
-            <SolidColorBrush x:Key="ButtonPrimaryBrush" Color="{StaticResource FyneAccentColorValue}"/>
+            <SolidColorBrush x:Key="CardBackgroundColor" Color="{StaticResource BaseCardBackgroundColorValue}"/>
+            <SolidColorBrush x:Key="CardBorderColor" Color="{StaticResource BaseSubtleBorderColorValue}"/>
+            <SolidColorBrush x:Key="ButtonPrimaryBrush" Color="{StaticResource BaseAccentColorValue}"/>
             <SolidColorBrush x:Key="ButtonDefaultBrush" Color="#383838"/>
-            <SolidColorBrush x:Key="ButtonHoverBrush" Color="{StaticResource FyneHoverBackgroundColorValue}"/>
+            <SolidColorBrush x:Key="ButtonHoverBrush" Color="{StaticResource BaseHoverBackgroundColorValue}"/>
             <SolidColorBrush x:Key="ButtonDisabledBrush" Color="#2A2A2A"/>
             <SolidColorBrush x:Key="ScrollBarBackgroundBrush" Color="#252525"/>
             <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="#505050"/>
@@ -66,11 +59,11 @@
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="border" Property="Background" Value="{StaticResource ButtonHoverBrush}"/>
-                                    <Setter Property="BorderBrush" Value="{StaticResource FyneAccentColor}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource BorderAccentColor}"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="{StaticResource FyneAccentColor}"/>
-                                    <Setter Property="BorderBrush" Value="{StaticResource FyneAccentColor}"/>
+                                    <Setter TargetName="border" Property="Background" Value="{StaticResource BorderAccentColor}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource BorderAccentColor}"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter TargetName="border" Property="Background" Value="{StaticResource ButtonDisabledBrush}"/>
@@ -88,7 +81,7 @@
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Width" Value="46"/>
-                <Setter Property="Height" Value="32"/>
+                <Setter Property="Height" Value="35"/>
                 <Setter Property="Padding" Value="0"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Foreground" Value="{StaticResource ForegroundGray}"/>
@@ -97,7 +90,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border x:Name="border" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" SnapsToDevicePixels="true" CornerRadius="3">
                                 <ContentPresenter x:Name="contentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                             </Border>
                             <ControlTemplate.Triggers>
@@ -108,6 +101,9 @@
                                 <Trigger Property="IsPressed" Value="True">
                                     <Setter TargetName="border" Property="Background" Value="#66999999"/>
                                     <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.5"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -177,10 +173,10 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource FyneHoverBackgroundColor}"/>
+                                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource ButtonHoverBrush}"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource FyneAccentColor}"/>
+                                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource BorderAccentColor}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -203,7 +199,7 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="Bd" Property="Effect">
                                         <Setter.Value>
-                                            <DropShadowEffect ShadowDepth="0" Color="{StaticResource FyneAccentColorValue}" Opacity="0.5" BlurRadius="8"/>
+                                            <DropShadowEffect ShadowDepth="0" Color="{StaticResource BaseAccentColorValue}" Opacity="0.5" BlurRadius="8"/>
                                         </Setter.Value>
                                     </Setter>
                                 </Trigger>
@@ -229,32 +225,33 @@
 
             <Style x:Key="LoadingProgressBarStyle" TargetType="ProgressBar">
                 <Setter Property="IsIndeterminate" Value="True"/>
-                <Setter Property="Width" Value="50"/>
-                <Setter Property="Height" Value="50"/>
+                <Setter Property="Width" Value="40"/>
+                <Setter Property="Height" Value="40"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Foreground" Value="{StaticResource ForegroundLightGray}"/>
-                <Setter Property="Background" Value="{StaticResource ForegroundLightGray}"/>
+                <Setter Property="Foreground" Value="{StaticResource BorderAccentColor}"/>
+                <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ProgressBar" >
                             <Grid>
-                                <Ellipse Stroke="{StaticResource ForegroundLightGray}" StrokeThickness="3" Opacity="0.3"/>
-                                <Ellipse Name="PART_Indicator" Stroke="{StaticResource ForegroundLightGray}" StrokeThickness="3" StrokeDashArray="20, 20" StrokeDashCap="Round">
-                                    <Ellipse.RenderTransform>
-                                        <RotateTransform Angle="0" CenterX="25" CenterY="25" />
-                                    </Ellipse.RenderTransform>
-                                    <Ellipse.Triggers>
+                                <Ellipse Stroke="{TemplateBinding Foreground}" StrokeThickness="3" Opacity="0.2"/>
+                                <Path Name="PART_Indicator" Stroke="{TemplateBinding Foreground}" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                      Data="M20,2 A18,18 0 0 1 38,20">
+                                    <Path.RenderTransform>
+                                        <RotateTransform Angle="0" CenterX="20" CenterY="20" />
+                                    </Path.RenderTransform>
+                                    <Path.Triggers>
                                         <EventTrigger RoutedEvent="Loaded">
                                             <BeginStoryboard>
                                                 <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetName="PART_Indicator" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)" From="0" To="360" Duration="0:0:1.5" RepeatBehavior="Forever"/>
+                                                    <DoubleAnimation Storyboard.TargetName="PART_Indicator" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)" From="0" To="360" Duration="0:0:1.2" RepeatBehavior="Forever"/>
                                                 </Storyboard>
                                             </BeginStoryboard>
                                         </EventTrigger>
-                                    </Ellipse.Triggers>
-                                </Ellipse>
+                                    </Path.Triggers>
+                                </Path>
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
@@ -281,7 +278,7 @@
                                      BorderBrush="{TemplateBinding BorderBrush}"
                                      Background="{TemplateBinding Background}"
                                      Padding="{TemplateBinding Padding}"
-                                     Margin="0,0,8,0">
+                                     Margin="0,0,8,0" CornerRadius="3,3,0,0">
                                 <ContentPresenter ContentSource="Header"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"/>
@@ -303,9 +300,9 @@
             </Style>
 
             <Style x:Key="TextBoxWithPlaceholder" TargetType="TextBox">
-                <Setter Property="Background" Value="{StaticResource FyneCardBackgroundColor}"/>
+                <Setter Property="Background" Value="{StaticResource CardBackgroundColor}"/>
                 <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource FyneSubtleBorderColor}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="Padding" Value="8,5"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -332,11 +329,11 @@
                                     <Setter Property="Visibility" TargetName="PlaceholderText" Value="Visible"/>
                                 </MultiTrigger>
                                 <Trigger Property="IsFocused" Value="True">
-                                    <Setter Property="BorderBrush" Value="{StaticResource FyneAccentColor}"/>
-                                    <Setter TargetName="border" Property="Background" Value="{StaticResource FyneHoverBackgroundColor}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource BorderAccentColor}"/>
+                                    <Setter TargetName="border" Property="Background" Value="{StaticResource ButtonHoverBrush}"/>
                                 </Trigger>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="BorderBrush" Value="{StaticResource FyneSubtleBorderColor}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -421,18 +418,19 @@
             <Style TargetType="{x:Type ScrollBar}">
                 <Setter Property="SnapsToDevicePixels" Value="True"/>
                 <Setter Property="OverridesDefaultStyle" Value="true"/>
-                <Setter Property="Width" Value="8"/>
-                <Setter Property="MinWidth" Value="8"/>
+                <Setter Property="Width" Value="10"/>
+                <Setter Property="MinWidth" Value="10"/>
+                <Setter Property="Background" Value="{StaticResource ScrollBarBackgroundBrush}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ScrollBar}">
-                            <Grid Name="Bg" SnapsToDevicePixels="true" Background="{StaticResource ScrollBarBackgroundBrush}">
+                            <Grid Name="Bg" SnapsToDevicePixels="true" Background="{TemplateBinding Background}">
                                 <Track x:Name="PART_Track" IsDirectionReversed="true" Width="Auto" HorizontalAlignment="Stretch">
                                     <Track.DecreaseRepeatButton>
                                         <RepeatButton Style="{StaticResource ScrollBarPageButtonStyle}" Command="ScrollBar.PageUpCommand" />
                                     </Track.DecreaseRepeatButton>
                                     <Track.Thumb>
-                                        <Thumb Style="{StaticResource ScrollBarThumbStyle}" Margin="1,0,1,0" />
+                                        <Thumb Style="{StaticResource ScrollBarThumbStyle}" Margin="2,0,2,0" />
                                     </Track.Thumb>
                                     <Track.IncreaseRepeatButton>
                                         <RepeatButton Style="{StaticResource ScrollBarPageButtonStyle}" Command="ScrollBar.PageDownCommand" />
@@ -446,18 +444,18 @@
                     <Trigger Property="Orientation" Value="Horizontal">
                         <Setter Property="Width" Value="Auto"/>
                         <Setter Property="MinWidth" Value="0"/>
-                        <Setter Property="Height" Value="8"/>
-                        <Setter Property="MinHeight" Value="8"/>
+                        <Setter Property="Height" Value="10"/>
+                        <Setter Property="MinHeight" Value="10"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type ScrollBar}">
-                                    <Grid Name="Bg" SnapsToDevicePixels="true" Background="{StaticResource ScrollBarBackgroundBrush}">
+                                    <Grid Name="Bg" SnapsToDevicePixels="true" Background="{TemplateBinding Background}">
                                         <Track x:Name="PART_Track" IsDirectionReversed="False" Height="Auto" VerticalAlignment="Stretch">
                                             <Track.DecreaseRepeatButton>
                                                 <RepeatButton Style="{StaticResource ScrollBarPageButtonStyle}" Command="ScrollBar.PageLeftCommand" />
                                             </Track.DecreaseRepeatButton>
                                             <Track.Thumb>
-                                                <Thumb Style="{StaticResource ScrollBarThumbStyle}" Margin="0,1,0,1" />
+                                                <Thumb Style="{StaticResource ScrollBarThumbStyle}" Margin="0,2,0,2" />
                                             </Track.Thumb>
                                             <Track.IncreaseRepeatButton>
                                                 <RepeatButton Style="{StaticResource ScrollBarPageButtonStyle}" Command="ScrollBar.PageRightCommand" />
@@ -483,7 +481,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border x:Name="border" Background="Transparent" Padding="{TemplateBinding Padding}">
+                            <Border x:Name="border" Background="Transparent" Padding="{TemplateBinding Padding}" CornerRadius="4">
                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                     <Path x:Name="iconPath" Data="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" Fill="{TemplateBinding Foreground}" Width="22" Height="22" Stretch="Uniform" Margin="0,0,0,4"/>
                                     <TextBlock x:Name="buttonText" Text="{TemplateBinding Content}" FontSize="11" FontWeight="Normal" TextAlignment="Center"/>
@@ -495,8 +493,8 @@
                                     <Setter TargetName="iconPath" Property="Fill" Value="{StaticResource ForegroundColor}"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Foreground" Value="{StaticResource FyneAccentColor}"/>
-                                    <Setter TargetName="iconPath" Property="Fill" Value="{StaticResource FyneAccentColor}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource BorderAccentColor}"/>
+                                    <Setter TargetName="iconPath" Property="Fill" Value="{StaticResource BorderAccentColor}"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter Property="Opacity" Value="0.5"/>
@@ -511,15 +509,15 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ToggleButton">
-                            <Border x:Name="border" Background="#01FFFFFF" BorderBrush="Transparent" BorderThickness="0">
-                                <Path x:Name="arrow" Data="M0,0 L4,4 L8,0 Z" Fill="{StaticResource ForegroundGray}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <Border x:Name="border" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                <Path x:Name="arrow" Data="M0,0 L4,4 L8,0 Z" Fill="{StaticResource ForegroundGray}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="arrow" Property="Fill" Value="{StaticResource ForegroundLightGray}"/>
                                 </Trigger>
                                 <Trigger Property="IsChecked" Value="True">
-                                    <Setter TargetName="arrow" Property="Fill" Value="{StaticResource FyneAccentColor}"/>
+                                    <Setter TargetName="arrow" Property="Fill" Value="{StaticResource BorderAccentColor}"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter TargetName="arrow" Property="Fill" Value="{StaticResource ButtonDisabledBrush}"/>
@@ -533,38 +531,39 @@
 
             <Style x:Key="ComboBoxStyle" TargetType="{x:Type ComboBox}">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
-                <Setter Property="Background" Value="{StaticResource FyneCardBackgroundColor}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource FyneSubtleBorderColor}"/>
+                <Setter Property="Background" Value="{StaticResource CardBackgroundColor}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="Padding" Value="8,5"/>
                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
                 <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ComboBox}">
                             <Grid x:Name="MainGrid" SnapsToDevicePixels="true">
                                 <Border x:Name="MainBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3"/>
-                                <ToggleButton x:Name="ToggleButton" 
-                                              Style="{StaticResource ComboBoxToggleButton}" 
-                                              IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
-                                              ClickMode="Press" 
+                                <ToggleButton x:Name="ToggleButton"
+                                              Style="{StaticResource ComboBoxToggleButton}"
+                                              IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                              ClickMode="Press"
                                               Focusable="False"
-                                              HorizontalAlignment="Stretch" 
+                                              HorizontalAlignment="Stretch"
                                               VerticalAlignment="Stretch"/>
-                                <ContentPresenter x:Name="ContentSite" 
-                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                                                  IsHitTestVisible="false" 
-                                                  Margin="{TemplateBinding Padding}" 
-                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
-                                                  Content="{TemplateBinding SelectionBoxItem}" 
-                                                  ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" 
-                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
-                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" 
+                                <ContentPresenter x:Name="ContentSite"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  IsHitTestVisible="false"
+                                                  Margin="{TemplateBinding Padding}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
                                                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                                 <Popup x:Name="PART_Popup" AllowsTransparency="true" IsOpen="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Placement="Bottom">
                                     <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{Binding Path=ActualWidth, ElementName=MainGrid}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                        <Border x:Name="DropDownBorder" Background="{StaticResource CardBackgroundColor}" BorderThickness="1" BorderBrush="{StaticResource CardBorderColor}" CornerRadius="3"/>
+                                        <Border x:Name="DropDownBorder" Background="{StaticResource CardBackgroundColor}" BorderThickness="1" BorderBrush="{StaticResource BorderAccentColor}" CornerRadius="3"/>
                                         <ScrollViewer x:Name="DropDownScrollViewer">
                                             <StackPanel IsItemsHost="true" KeyboardNavigation.DirectionalNavigation="Contained"/>
                                         </ScrollViewer>
@@ -573,10 +572,10 @@
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="BorderBrush" TargetName="MainBorder" Value="{StaticResource FyneSubtleBorderColor}"/>
+                                    <Setter Property="BorderBrush" TargetName="MainBorder" Value="{StaticResource CardBorderColor}"/>
                                 </Trigger>
                                 <Trigger Property="IsDropDownOpen" Value="True">
-                                    <Setter Property="BorderBrush" TargetName="MainBorder" Value="{StaticResource FyneAccentColor}"/>
+                                    <Setter Property="BorderBrush" TargetName="MainBorder" Value="{StaticResource BorderAccentColor}"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter Property="Foreground" Value="{StaticResource ForegroundGray}"/>
@@ -590,19 +589,19 @@
 
             <Style TargetType="{x:Type ComboBoxItem}">
                 <Setter Property="SnapsToDevicePixels" Value="True"/>
-                <Setter Property="Padding" Value="8,5"/>
+                <Setter Property="Padding" Value="8,6"/>
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                            <Border x:Name="Bd" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true" Background="{TemplateBinding Background}">
+                            <Border x:Name="Bd" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true" Background="{TemplateBinding Background}" CornerRadius="3">
                                 <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsHighlighted" Value="True">
-                                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource FyneAccentColor}"/>
+                                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource BorderAccentColor}"/>
                                     <Setter Property="Foreground" Value="WhiteSmoke"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">

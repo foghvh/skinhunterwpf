@@ -1,12 +1,11 @@
-﻿using System.Windows.Controls;
-using System.Windows.Navigation;
+﻿using System.Windows.Navigation;
 using System.Diagnostics;
 using System;
 using System.Windows;
 
 namespace SkinHunterWPF.Views
 {
-    public partial class SkinDetailDialog : UserControl
+    public partial class SkinDetailDialog : System.Windows.Controls.UserControl
     {
         public SkinDetailDialog()
         {
@@ -22,7 +21,7 @@ namespace SkinHunterWPF.Views
             catch (Exception ex)
             {
                 Debug.WriteLine($"Failed to open hyperlink: {ex.Message}");
-                MessageBox.Show($"Could not open link: {e.Uri.AbsoluteUri}", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                System.Windows.MessageBox.Show($"Could not open link: {e.Uri.AbsoluteUri}", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             e.Handled = true;
         }

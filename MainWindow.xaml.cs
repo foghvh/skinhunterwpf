@@ -1,15 +1,101 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
-using System;
-using System.Windows.Shapes;
+using System.Windows.Forms;
+using System.Drawing;
+using SkinHunterWPF.ViewModels;
+using System.IO;
+using System.Diagnostics;
 
 namespace SkinHunterWPF
 {
     public partial class MainWindow : Window
     {
+        private NotifyIcon? _notifyIcon;
+        private bool _isExplicitClose = false;
+
         public MainWindow()
         {
             InitializeComponent();
+            SetupNotifyIcon();
+            MaximizeButton.IsEnabled = false;
+            this.Loaded += MainWindow_Loaded;
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainViewModel mvm)
+            {
+                await mvm.EnsureInitialDataLoadedAsync();
+            }
+        }
+
+        private void SetupNotifyIcon()
+        {
+            try
+            {
+                string iconFileName = "icon.ico"; // Nombre del archivo de icono
+                string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", iconFileName);
+
+                if (File.Exists(iconPath))
+                {
+                    _notifyIcon = new NotifyIcon
+                    {
+                        Icon = new Icon(iconPath),
+                        Visible = false,
+                        Text = "Skin Hunter"
+                    };
+                    _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
+
+                    var contextMenu = new ContextMenuStrip();
+                    contextMenu.Items.Add("Abrir Skin Hunter", null, (s, args) => RestoreWindow());
+                    contextMenu.Items.Add("Salir", null, (s, args) => ExitApplication());
+                    _notifyIcon.ContextMenuStrip = contextMenu;
+                }
+                else
+                {
+                    Debug.WriteLine($"Error: NotifyIcon - El archivo '{iconPath}' no fue encontrado. El icono de la bandeja del sistema no estará disponible.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error al configurar NotifyIcon: {ex.Message}");
+            }
+        }
+
+        private void RestoreWindow()
+        {
+            Show();
+            WindowState = WindowState.Normal;
+            Activate();
+            if (_notifyIcon != null) _notifyIcon.Visible = false;
+        }
+
+        private void ExitApplication()
+        {
+            _isExplicitClose = true;
+            _notifyIcon?.Dispose();
+            System.Windows.Application.Current.Shutdown();
+        }
+
+        private void NotifyIcon_DoubleClick(object? sender, EventArgs e)
+        {
+            RestoreWindow();
+        }
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            if (!_isExplicitClose && _notifyIcon != null && _notifyIcon.Icon != null)
+            {
+                e.Cancel = true;
+                Hide();
+                _notifyIcon.Visible = true;
+            }
+            else
+            {
+                _notifyIcon?.Dispose();
+            }
+            base.OnClosing(e);
         }
 
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -25,7 +111,6 @@ namespace SkinHunterWPF
 
         private void MaximizeButton_Click(object sender, RoutedEventArgs e)
         {
-            this.WindowState = this.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

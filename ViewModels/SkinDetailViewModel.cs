@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using System.Windows;
+using System.Windows; // Se mantiene para MessageBoxButton, MessageBoxImage
 using System.Diagnostics;
 
 namespace SkinHunterWPF.ViewModels
@@ -103,7 +103,7 @@ namespace SkinHunterWPF.ViewModels
             DownloadSkinCommand.NotifyCanExecuteChanged();
 
             IsLoading = false;
-            MessageBox.Show($"'{skinOrChromaName}' (ID: {idToDownload}) download initiated!", "Download", MessageBoxButton.OK, MessageBoxImage.Information);
+            System.Windows.MessageBox.Show($"'{skinOrChromaName}' (ID: {idToDownload}) download initiated!", "Download", MessageBoxButton.OK, MessageBoxImage.Information); // Calificado aquí
 
             CloseDialog();
         }

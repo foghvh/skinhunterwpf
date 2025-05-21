@@ -5,7 +5,7 @@ using SkinHunterWPF.Services;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Windows;
+using System.Windows; // Se mantiene para MessageBoxButton, MessageBoxImage
 using System;
 
 namespace SkinHunterWPF.ViewModels
@@ -69,7 +69,7 @@ namespace SkinHunterWPF.ViewModels
             }
             else
             {
-                MessageBox.Show($"Failed to load details for Champion ID: {championId}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show($"Failed to load details for Champion ID: {championId}", "Error", MessageBoxButton.OK, MessageBoxImage.Error); // Calificado aquí
             }
             IsLoading = false;
         }
