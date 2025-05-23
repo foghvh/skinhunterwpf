@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-// No se necesita 'using System.Windows;' si se califica Application.Current
 
 namespace SkinHunterWPF.Models
 {
@@ -48,11 +47,40 @@ namespace SkinHunterWPF.Models
                 }
                 return _championImageSourceField;
             }
-            private set
+            private set // Cambiado a private para control interno
             {
                 SetProperty(ref _championImageSourceField, value);
             }
         }
+
+        public void ReleaseImage()
+        {
+            Debug.WriteLine($"[ChampionSummary] Liberando imagen para {Name}");
+            if (System.Windows.Application.Current != null)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (_championImageSourceField != _placeholderImage)
+                    {
+                        CancelCurrentLoad(); // Cancelar si hay una carga en progreso
+                        ChampionImageSource = _placeholderImage; // Volver al placeholder
+                        // _championImageSourceField = _placeholderImage; // Ya lo hace el setter de ChampionImageSource
+                        Debug.WriteLine($"[ChampionSummary] Imagen para {Name} establecida a placeholder.");
+                    }
+                });
+            }
+            else // Si no hay Dispatcher (ej. pruebas unitarias o cierre muy temprano)
+            {
+                if (_championImageSourceField != _placeholderImage)
+                {
+                    CancelCurrentLoad();
+                    _championImageSourceField = _placeholderImage; // Asignación directa
+                    OnPropertyChanged(nameof(ChampionImageSource)); // Notificar cambio manualmente
+                    Debug.WriteLine($"[ChampionSummary] Imagen para {Name} establecida a placeholder (sin Dispatcher).");
+                }
+            }
+        }
+
 
         [JsonIgnore]
         private volatile bool _isImageLoading = false;
@@ -70,7 +98,7 @@ namespace SkinHunterWPF.Models
             if (_isImageLoading) return;
             _isImageLoading = true;
 
-            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Cancel(); // Cancelar carga anterior
             _cancellationTokenSource = new CancellationTokenSource();
             var token = _cancellationTokenSource.Token;
 
@@ -83,15 +111,16 @@ namespace SkinHunterWPF.Models
             }
             else
             {
-                lock (_imageCache)
+                lock (_imageCache) // Sincronizar acceso al caché
                 {
                     if (_imageCache.TryGetValue(imageUrl, out var cachedImageFromLock))
                     {
                         finalImage = cachedImageFromLock;
+                        Debug.WriteLine($"[ImageLoad] Cache HIT: {imageUrl} for {Name}");
                     }
                 }
 
-                if (finalImage == null)
+                if (finalImage == null) // Si no está en caché, cargarla
                 {
                     try
                     {
@@ -103,7 +132,13 @@ namespace SkinHunterWPF.Models
 
                         if (token.IsCancellationRequested)
                         {
+                            Debug.WriteLine($"[ImageLoad] Cancelled during download: {imageUrl} for {Name}");
                             _isImageLoading = false;
+                            // Asegurar que se usa placeholder si se cancela antes de asignar
+                            if (System.Windows.Application.Current != null)
+                                System.Windows.Application.Current.Dispatcher.Invoke(() => ChampionImageSource = _placeholderImage);
+                            else
+                                ChampionImageSource = _placeholderImage;
                             return;
                         }
 
@@ -116,10 +151,10 @@ namespace SkinHunterWPF.Models
                             bitmap.StreamSource = stream;
                             bitmap.EndInit();
                         }
-                        bitmap.Freeze();
+                        bitmap.Freeze(); // Importante para uso en otros hilos y rendimiento
                         finalImage = bitmap;
 
-                        lock (_imageCache)
+                        lock (_imageCache) // Sincronizar acceso al caché para añadir
                         {
                             _imageCache.TryAdd(imageUrl, finalImage);
                         }
@@ -127,33 +162,47 @@ namespace SkinHunterWPF.Models
                     }
                     catch (OperationCanceledException)
                     {
-                        Debug.WriteLine($"[ImageLoad] Cancelled: {imageUrl} for {Name}");
+                        Debug.WriteLine($"[ImageLoad] Cancelled (OperationCanceledException): {imageUrl} for {Name}");
+                        finalImage = _placeholderImage; // Usar placeholder si se cancela
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine($"[ImageLoad] Error loading image {imageUrl} for {Name}: {ex.Message}");
-                        finalImage = _placeholderImage;
+                        finalImage = _placeholderImage; // Usar placeholder en caso de error
                     }
                 }
             }
 
-            if (!token.IsCancellationRequested)
+            if (System.Windows.Application.Current != null)
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => // Calificado aquí
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    if (!token.IsCancellationRequested)
+                    if (!token.IsCancellationRequested) // Doble chequeo por si se canceló mientras estaba en cola del Dispatcher
                     {
-                        ChampionImageSource = finalImage;
+                        ChampionImageSource = finalImage ?? _placeholderImage;
+                    }
+                    else
+                    {
+                        ChampionImageSource = _placeholderImage; // Asegurar placeholder si se canceló
+                        Debug.WriteLine($"[ImageLoad] Carga para {Name} fue cancelada antes de asignación en Dispatcher.");
                     }
                 });
+            }
+            else // Para entornos sin Dispatcher (ej. pruebas)
+            {
+                ChampionImageSource = finalImage ?? _placeholderImage;
             }
             _isImageLoading = false;
         }
 
         public void CancelCurrentLoad()
         {
-            _cancellationTokenSource?.Cancel();
-            _isImageLoading = false;
+            if (_isImageLoading)
+            {
+                Debug.WriteLine($"[ChampionSummary] Cancelando carga de imagen para {Name}.");
+                _cancellationTokenSource?.Cancel();
+                _isImageLoading = false; // Marcar como no cargando inmediatamente
+            }
         }
 
         [JsonIgnore]

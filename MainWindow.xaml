@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         Title="Skin Hunter" Height="720" Width="1280" MinHeight="600" MinWidth="1000"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource WindowBackgroundColor}"
+        Background="Transparent"
         Foreground="{StaticResource ForegroundColor}"
         WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResizeWithGrip">
 
@@ -17,7 +17,9 @@
         <WindowChrome CaptionHeight="35" ResizeBorderThickness="8" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 
-    <Border >
+    <Border Background="{StaticResource HeaderBackgroundColor}"
+            CornerRadius="8"
+            Padding="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -27,11 +29,11 @@
 
             <Border Grid.Row="0" Background="{StaticResource HeaderBackgroundColor}" Height="60" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown" CornerRadius="7,7,0,0">
                 <DockPanel LastChildFill="True">
-                    <Border DockPanel.Dock="Bottom" Height="2" Background="{StaticResource BorderAccentColor}" Margin="1,0,1,0" />
-                    <Grid Margin="10,0">
+                    <Border DockPanel.Dock="Bottom" Height="1.5" Background="{StaticResource BorderAccentColor}" Margin="0"/>
+                    <Grid Margin="15,0,10,0">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                            <Image Source="pack://application:,,,/Assets/icon.ico" Height="35" VerticalAlignment="Center" Margin="5,0,10,0" RenderOptions.BitmapScalingMode="Fant"/>
-                            <TextBlock Text="SKIN-HUNTER" Foreground="{StaticResource ForegroundColor}" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" FontFamily="Arial Black"/>
+                            <Image Source="pack://application:,,,/Assets/logo.png" Height="30" VerticalAlignment="Center" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="Fant"/>
+                            <TextBlock Text="SKIN-HUNTER" Foreground="{StaticResource ForegroundColor}" VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
                         </StackPanel>
 
                         <TextBlock Text="initializing"
@@ -53,46 +55,18 @@
                 </DockPanel>
             </Border>
 
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-                          Padding="10,0,10,10" Focusable="False">
-                <ContentControl Content="{Binding CurrentViewModel}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
-                    <!-- Animación eliminada temporalmente para diagnosticar problemas de visibilidad -->
-                    <!--<ContentControl.Style>
-                        <Style TargetType="ContentControl">
-                            <Setter Property="Opacity" Value="0"/>
-                            <Setter Property="RenderTransform">
-                                <Setter.Value>
-                                    <TranslateTransform Y="20"/>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding CurrentViewModel.IsLoading}" Value="False">
-                                    <DataTrigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.35"/>
-                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" To="0" Duration="0:0:0.35">
-                                                    <DoubleAnimation.EasingFunction>
-                                                        <CubicEase EasingMode="EaseOut"/>
-                                                    </DoubleAnimation.EasingFunction>
-                                                </DoubleAnimation>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </DataTrigger.EnterActions>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding CurrentViewModel.IsLoading}" Value="True">
-                                    <DataTrigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.1"/>
-                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" To="20" Duration="0:0:0.01"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </DataTrigger.EnterActions>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ContentControl.Style>-->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Background="Transparent"
+                          Padding="0"
+                          Focusable="False">
+                <ContentControl x:Name="MainContentControl"
+                    Content="{Binding CurrentViewModel}"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch"
+                                Margin="66,0,66,0"
+                    Background="{StaticResource WindowBackgroundColor}">
                     <ContentControl.Resources>
                         <DataTemplate DataType="{x:Type vm:ChampionGridViewModel}">
                             <v:ChampionGridView/>
@@ -104,10 +78,10 @@
                 </ContentControl>
             </ScrollViewer>
 
-            <Border Grid.Row="2" Background="{StaticResource HeaderBackgroundColor}" Padding="0,5" CornerRadius="0,0,7,7">
+            <Border Grid.Row="2" Background="{StaticResource HeaderBackgroundColor}" Padding="0" CornerRadius="0,0,7,7">
                 <DockPanel LastChildFill="True">
-                    <Border DockPanel.Dock="Top" Height="2" Background="{StaticResource BorderAccentColor}" Margin="1,0,1,0"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Border DockPanel.Dock="Top" Height="1.5" Background="{StaticResource BorderAccentColor}" Margin="0"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,7,0,7">
                         <Button Style="{StaticResource NavButtonStyle}" Content="Champions" Command="{Binding NavigateToChampionsCommand}"
                                 Tag="M3,3H11V11H3V3M13,3H21V11H13V3M3,13H11V21H3V13M13,13H21V21H13V13Z"/>
                         <Button Style="{StaticResource NavButtonStyle}" Content="Search" Command="{Binding OpenSearchCommand}"
@@ -120,7 +94,7 @@
                 </DockPanel>
             </Border>
 
-            <Grid Grid.Row="0" Grid.RowSpan="3" Background="#DD1A1A1A"
+            <Grid Grid.Row="0" Grid.RowSpan="3" Background="#CC121212"
                   Visibility="{Binding DialogViewModel, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
                 <ContentControl Content="{Binding DialogViewModel}" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <ContentControl.Resources>

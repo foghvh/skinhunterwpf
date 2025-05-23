@@ -304,7 +304,7 @@
                 <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
                 <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
                 <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Padding" Value="8,5"/>
+                <Setter Property="Padding" Value="8,0"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="CaretBrush" Value="{StaticResource ForegroundLightGray}"/>
                 <Setter Property="Template">
@@ -418,7 +418,7 @@
             <Style TargetType="{x:Type ScrollBar}">
                 <Setter Property="SnapsToDevicePixels" Value="True"/>
                 <Setter Property="OverridesDefaultStyle" Value="true"/>
-                <Setter Property="Width" Value="10"/>
+                <Setter Property="Width" Value="20"/>
                 <Setter Property="MinWidth" Value="10"/>
                 <Setter Property="Background" Value="{StaticResource ScrollBarBackgroundBrush}"/>
                 <Setter Property="Template">
@@ -534,7 +534,7 @@
                 <Setter Property="Background" Value="{StaticResource CardBackgroundColor}"/>
                 <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
                 <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Padding" Value="8,5"/>
+                <Setter Property="Padding" Value="8,0"/>
                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
                 <Setter Property="SnapsToDevicePixels" Value="True"/>

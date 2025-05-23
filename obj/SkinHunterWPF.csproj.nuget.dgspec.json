@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\asd\\Desktop\\skinhunterwpf\\SkinHunterWPF.csproj": {}
+    "C:\\Users\\dev\\source\\repos\\SkinHunterWPF\\SkinHunterWPF.csproj": {}
   },
   "projects": {
-    "C:\\Users\\asd\\Desktop\\skinhunterwpf\\SkinHunterWPF.csproj": {
+    "C:\\Users\\dev\\source\\repos\\SkinHunterWPF\\SkinHunterWPF.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\asd\\Desktop\\skinhunterwpf\\SkinHunterWPF.csproj",
+        "projectUniqueName": "C:\\Users\\dev\\source\\repos\\SkinHunterWPF\\SkinHunterWPF.csproj",
         "projectName": "SkinHunterWPF",
-        "projectPath": "C:\\Users\\asd\\Desktop\\skinhunterwpf\\SkinHunterWPF.csproj",
-        "packagesPath": "C:\\Users\\asd\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\asd\\Desktop\\skinhunterwpf\\obj\\",
+        "projectPath": "C:\\Users\\dev\\source\\repos\\SkinHunterWPF\\SkinHunterWPF.csproj",
+        "packagesPath": "C:\\Users\\dev\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\dev\\source\\repos\\SkinHunterWPF\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\asd\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\dev\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],

@@ -27,29 +27,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="Assets\**\*" />
-		<Resource Include="Assets\**\*" />
+		<!-- Icono para el NotifyIcon - necesita ser un archivo físico -->
+		<Content Include="Assets\icon.ico">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+
+		<!-- Logo para el header de la ventana - puede ser recurso -->
+		<Resource Include="Assets\logo.png" />
+
+		<!-- Otros assets como recursos (incrustados) -->
+		<Resource Include="Assets\chroma-icon.png" />
+		<Resource Include="Assets\legacy-icon.png" />
+		<Resource Include="Assets\placeholder.png" />
+		<!-- <Resource Include="Assets\logo.ico" /> Si icon.ico también es usado como recurso en XAML, si no, esta línea no es necesaria -->
 	</ItemGroup>
 
-	<ItemGroup>
-		<None Update="Assets\chroma-icon.png">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</None>
-		<None Update="Assets\icon.ico">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</None>
-				<None Update="Assets\logo.ico">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</None>
-		<None Update="Assets\legacy-icon.png">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</None>
-		<None Update="Assets\logo.png">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</None>
-		<None Update="Assets\placeholder.png">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
+	<!-- Elimina el ItemGroup con <None Remove="Assets\**\*" /> y los <None Update ...> individuales si ya los definiste como Content o Resource arriba -->
 
 </Project>
