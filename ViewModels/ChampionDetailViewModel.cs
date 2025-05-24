@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SkinHunterWPF.Models;
-using SkinHunterWPF.Services;
+using SkinHunterWPF.Services; // Asegúrate que este using está presente
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
@@ -29,8 +29,8 @@ namespace SkinHunterWPF.ViewModels
         public void ReleaseResourcesForTray()
         {
             Debug.WriteLine($"[ChampionDetailViewModel] Liberando recursos para la bandeja (Campeón: {Champion?.Name}).");
-            IsLoading = true; // Indicar que estamos procesando
-            Champion?.ReleaseImage(); // Si ChampionSummary tiene el método
+            IsLoading = true;
+            Champion?.ReleaseImage();
             Champion = null;
             Skins.Clear();
             IsLoading = false;
@@ -44,13 +44,11 @@ namespace SkinHunterWPF.ViewModels
             Champion?.ReleaseImage();
             Champion = null;
             Skins.Clear();
-            // No ponemos IsLoading = false aquí, porque LoadChampionAsync lo hará.
         }
 
         [RelayCommand]
         public async Task LoadChampionAsync(int championId)
         {
-            // Evitar recarga si ya está cargado y es el mismo campeón, a menos que las skins estén vacías (podría ser después de ReleaseResources)
             if (Champion?.Id == championId && Skins.Any())
             {
                 Debug.WriteLine($"[ChampionDetailViewModel] Campeón {championId} ya cargado con {Skins.Count} skins. Omitiendo recarga.");
@@ -60,21 +58,22 @@ namespace SkinHunterWPF.ViewModels
 
             Debug.WriteLine($"[ChampionDetailViewModel] LoadChampionAsync para ID: {championId}");
             IsLoading = true;
-            // Si es un campeón diferente o las skins están vacías, limpiar.
+
+            // Limpiar si es un campeón diferente O si las skins están vacías (ej. después de ReleaseResources)
             if (Champion?.Id != championId || !Skins.Any())
             {
                 Skins.Clear();
-                Champion?.ReleaseImage(); // Liberar imagen del campeón anterior si existe
+                Champion?.ReleaseImage();
                 Champion = null;
             }
+
 
             var details = await CdragonDataService.GetChampionDetailsAsync(championId);
 
             if (details != null)
             {
-                Champion = details; // Esto cargará la imagen del nuevo campeón
+                Champion = details;
 
-                // Skins.Clear(); // Ya se hizo arriba si era necesario
                 if (details.Skins != null && details.Skins.Any())
                 {
                     foreach (var skin in details.Skins.Where(s =>

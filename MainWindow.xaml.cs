@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Forms;
 using System.Drawing;
 using SkinHunterWPF.ViewModels;
+using SkinHunterWPF.Services; // AÑADIR ESTE USING
 using System.IO;
 using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +18,7 @@ namespace SkinHunterWPF
         private bool _isExplicitClose = false;
         private bool _notifyIconInitializedSuccessfully = false;
         private readonly IServiceProvider _serviceProvider;
-        private FrameworkElement? _mainContentCache;
+        private int? _lastChampionIdFromDetailView = null;
 
 
         public MainWindow(IServiceProvider serviceProvider)
@@ -38,10 +39,6 @@ namespace SkinHunterWPF
             Debug.WriteLine("[MainWindow] MainWindow_Loaded INICIADO.");
             if (DataContext is MainViewModel mvm)
             {
-                if (MainContentControl.Content is FrameworkElement fe)
-                {
-                    _mainContentCache = fe;
-                }
                 await mvm.EnsureInitialDataLoadedAsync();
             }
             Debug.WriteLine("[MainWindow] MainWindow_Loaded FINALIZADO.");
@@ -57,28 +54,20 @@ namespace SkinHunterWPF
             {
                 if (mainVM.CurrentViewModel is ChampionGridViewModel cgvm)
                 {
+                    Debug.WriteLine("[MainWindow] Llamando a ReleaseResourcesForTray en ChampionGridViewModel.");
                     cgvm.ReleaseResourcesForTray();
                 }
                 else if (mainVM.CurrentViewModel is ChampionDetailViewModel cdvm)
                 {
+                    Debug.WriteLine("[MainWindow] Llamando a ReleaseResourcesForTray en ChampionDetailViewModel.");
+                    _lastChampionIdFromDetailView = cdvm.Champion?.Id;
                     cdvm.ReleaseResourcesForTray();
                 }
             }
 
-            if (MainContentControl != null && MainContentControl.Content != null)
-            {
-                if (_mainContentCache == null) // Guardar solo si no se hizo en Loaded o si cambió
-                {
-                    _mainContentCache = MainContentControl.Content as FrameworkElement;
-                }
-                MainContentControl.Content = null; // Desconectar para liberar
-                Debug.WriteLine("[MainWindow] MainContentControl.Content puesto a null.");
-            }
-
-
             GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
             GC.WaitForPendingFinalizers();
-            Debug.WriteLine("[MainWindow] Recursos liberados (intento) y GC invocado.");
+            Debug.WriteLine("[MainWindow] Intento de liberación de recursos y GC invocado para bandeja.");
         }
 
         private async Task RestoreFromTrayAsync()
@@ -86,51 +75,51 @@ namespace SkinHunterWPF
             Debug.WriteLine("[MainWindow] Restaurando desde la bandeja...");
             if (_notifyIcon != null) _notifyIcon.Visible = false;
 
-            if (MainContentControl != null && MainContentControl.Content == null && _mainContentCache != null)
-            {
-                MainContentControl.Content = _mainContentCache;
-                Debug.WriteLine("[MainWindow] MainContentControl.Content restaurado desde caché.");
-            }
-
+            this.Show();
+            this.WindowState = WindowState.Normal;
+            this.Activate();
 
             if (DataContext is MainViewModel mainVM)
             {
+                Debug.WriteLine($"[MainWindow] ViewModel actual al restaurar: {mainVM.CurrentViewModel?.GetType().Name}");
                 if (mainVM.CurrentViewModel is ChampionGridViewModel cgvm)
                 {
                     Debug.WriteLine("[MainWindow] Recargando ChampionGridViewModel...");
                     if (cgvm.LoadChampionsCommand.CanExecute(null))
                         await cgvm.LoadChampionsCommand.ExecuteAsync(null);
                 }
-                else if (mainVM.CurrentViewModel is ChampionDetailViewModel cdvm && cdvm.Champion != null)
+                else if (mainVM.CurrentViewModel is ChampionDetailViewModel cdvm)
                 {
-                    Debug.WriteLine($"[MainWindow] Recargando ChampionDetailViewModel para {cdvm.Champion.Name}...");
-                    int champId = cdvm.Champion.Id;
-                    cdvm.PrepareForReload();
-                    if (cdvm.LoadChampionCommand.CanExecute(champId))
-                        await cdvm.LoadChampionCommand.ExecuteAsync(champId);
+                    if (_lastChampionIdFromDetailView.HasValue)
+                    {
+                        Debug.WriteLine($"[MainWindow] Preparando para recargar ChampionDetailViewModel (ID guardado: {_lastChampionIdFromDetailView.Value})...");
+                        cdvm.PrepareForReload();
+                        if (cdvm.LoadChampionCommand.CanExecute(_lastChampionIdFromDetailView.Value))
+                        {
+                            Debug.WriteLine($"[MainWindow] Recargando ChampionDetailViewModel para ID: {_lastChampionIdFromDetailView.Value}.");
+                            await cdvm.LoadChampionCommand.ExecuteAsync(_lastChampionIdFromDetailView.Value);
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"[MainWindow] No se pudo ejecutar LoadChampionCommand para ChampionDetailViewModel ID: {_lastChampionIdFromDetailView.Value}. Volviendo a la cuadrícula.");
+                            _serviceProvider.GetRequiredService<INavigationService>().NavigateTo<ChampionGridViewModel>();
+                        }
+                        _lastChampionIdFromDetailView = null;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("[MainWindow] ChampionDetailViewModel no tenía un ID de campeón previo para recargar, volviendo a la cuadrícula.");
+                        _serviceProvider.GetRequiredService<INavigationService>().NavigateTo<ChampionGridViewModel>();
+                    }
                 }
-                else if (mainVM.CurrentViewModel == null && _mainContentCache != null) // Si el VM fue completamente destruido
+                else
                 {
-                    Debug.WriteLine("[MainWindow] CurrentViewModel era null, intentando restaurar vista por defecto.");
-                    var championGridViewModel = _serviceProvider.GetRequiredService<ChampionGridViewModel>();
-                    mainVM.CurrentViewModel = championGridViewModel; // Asignar directamente
-                    if (MainContentControl.Content == null) MainContentControl.Content = _mainContentCache; // Asegurar que el control tiene una vista
-                    if (championGridViewModel.LoadChampionsCommand.CanExecute(null))
-                        await championGridViewModel.LoadChampionsCommand.ExecuteAsync(null);
-                }
-                else if (mainVM.CurrentViewModel == null) // Si _mainContentCache también es null (caso extremo)
-                {
-                    Debug.WriteLine("[MainWindow] CurrentViewModel y _mainContentCache eran null, navegando a campeones.");
-                    mainVM.NavigateToChampionsCommand.Execute(null);
+                    Debug.WriteLine("[MainWindow] No se reconoce el ViewModel actual o es null, navegando a la vista de campeones por defecto.");
+                    _serviceProvider.GetRequiredService<INavigationService>().NavigateTo<ChampionGridViewModel>();
                 }
             }
-
-            this.Show();
-            this.WindowState = WindowState.Normal;
-            this.Activate();
             Debug.WriteLine("[MainWindow] Ventana restaurada y ViewModel recargado (intento).");
         }
-
 
         private void SetupNotifyIcon()
         {
@@ -156,17 +145,9 @@ namespace SkinHunterWPF
                         _notifyIcon.Icon = new Icon(iconPath);
                         Debug.WriteLine("[NotifyIcon] Icono cargado y asignado exitosamente.");
                     }
-                    catch (ArgumentException argEx)
-                    {
-                        Debug.WriteLine($"[NotifyIcon] ArgumentException al cargar Icon: {argEx.Message}. Asegúrate que '{iconFileName}' es un archivo .ico válido.");
-                        _notifyIcon.Dispose();
-                        _notifyIcon = null;
-                        _notifyIconInitializedSuccessfully = false;
-                        return;
-                    }
                     catch (Exception exIcon)
                     {
-                        Debug.WriteLine($"[NotifyIcon] Excepción general al cargar Icon: {exIcon.ToString()}");
+                        Debug.WriteLine($"[NotifyIcon] EXCEPCIÓN al cargar Icon (archivo: {iconPath}): {exIcon.ToString()}. Asegúrate que '{iconFileName}' es un archivo .ico válido y accesible.");
                         _notifyIcon.Dispose();
                         _notifyIcon = null;
                         _notifyIconInitializedSuccessfully = false;

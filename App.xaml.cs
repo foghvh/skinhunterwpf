@@ -41,7 +41,8 @@ namespace SkinHunterWPF
             services.AddTransient<ChampionGridViewModel>();
             services.AddTransient<ChampionDetailViewModel>();
             services.AddTransient<SkinDetailViewModel>();
-            services.AddSingleton<MainWindow>();
+            services.AddTransient<OmnisearchViewModel>();
+            services.AddSingleton<MainWindow>(sp => new MainWindow(sp));
         }
     }
 }

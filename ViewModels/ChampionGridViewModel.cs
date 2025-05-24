@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SkinHunterWPF.Models;
-using SkinHunterWPF.Services;
+using SkinHunterWPF.Services; // Asegúrate que este using está presente
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,17 +43,16 @@ namespace SkinHunterWPF.ViewModels
         public void ReleaseResourcesForTray()
         {
             Debug.WriteLine("[ChampionGridViewModel] Liberando recursos para la bandeja...");
+            IsLoading = true;
             if (_allChampions.Any())
             {
-                foreach (var champ in _allChampions.ToList()) // ToList para poder modificar la colección base
+                var championsToRelease = _allChampions.ToList();
+                System.Windows.Application.Current?.Dispatcher.Invoke(() => _allChampions.Clear());
+
+                foreach (var champ in championsToRelease)
                 {
                     champ.ReleaseImage();
                 }
-                _allChampions.Clear(); // Ahora seguro limpiar
-
-                // No limpiar AllRoles ni SelectedRole para que los filtros persistan al restaurar,
-                // a menos que la recarga de LoadChampionsAsync los repopule de todas formas.
-                // Si LoadChampionsAsync siempre repopula roles, se podrían limpiar aquí.
 
                 System.Windows.Application.Current?.Dispatcher.Invoke(() => ChampionsView?.Refresh());
                 Debug.WriteLine($"[ChampionGridViewModel] Colección _allChampions limpiada. Count: {_allChampions.Count}");
@@ -62,7 +61,7 @@ namespace SkinHunterWPF.ViewModels
             {
                 Debug.WriteLine("[ChampionGridViewModel] _allChampions ya estaba vacía.");
             }
-            IsLoading = false; // Asegurar que no se quede en estado de carga
+            IsLoading = false;
             Debug.WriteLine("[ChampionGridViewModel] Recursos liberados.");
         }
 
@@ -113,10 +112,10 @@ namespace SkinHunterWPF.ViewModels
             }
 
             var sortedRoles = uniqueRoles.OrderBy(r => r).ToList();
-            string? currentSelection = SelectedRole; // Guardar la selección actual
+            string? currentSelection = SelectedRole;
 
-            // Usar Dispatcher para modificar AllRoles si es necesario (aunque generalmente se llama desde el hilo de UI)
             System.Windows.Application.Current?.Dispatcher.Invoke(() => {
+                string? actualCurrentSelection = SelectedRole;
                 AllRoles.Clear();
                 AllRoles.Add("All");
                 foreach (var role in sortedRoles)
@@ -125,10 +124,9 @@ namespace SkinHunterWPF.ViewModels
                     AllRoles.Add(displayRole);
                 }
 
-                // Restaurar la selección si aún es válida, sino default a "All"
-                if (!string.IsNullOrEmpty(currentSelection) && AllRoles.Contains(currentSelection))
+                if (!string.IsNullOrEmpty(actualCurrentSelection) && AllRoles.Contains(actualCurrentSelection))
                 {
-                    if (SelectedRole != currentSelection) SelectedRole = currentSelection; // Evitar re-trigger innecesario
+                    if (SelectedRole != actualCurrentSelection) SelectedRole = actualCurrentSelection;
                 }
                 else
                 {
@@ -140,53 +138,50 @@ namespace SkinHunterWPF.ViewModels
         [RelayCommand]
         public async Task LoadChampionsAsync()
         {
-            if (IsLoading && _allChampions.Any()) // Si ya está cargando y tiene datos, no hacer nada extra
+            if (IsLoading && _allChampions.Any())
             {
                 Debug.WriteLine("[ChampionGridViewModel] LoadChampionsAsync llamado pero ya está cargando con datos, retornando.");
                 return;
             }
 
-            IsLoading = true; // Poner IsLoading a true al inicio de la carga
+            IsLoading = true;
             Debug.WriteLine("[ChampionGridViewModel] LoadChampionsAsync INICIADO.");
 
-            // Si _allChampions está vacía O si queremos forzar una recarga completa
-            if (!_allChampions.Any())
+            if (_allChampions.Any()) // Limpiar si ya hay datos, para asegurar que una recarga sea fresca
             {
-                Debug.WriteLine("[ChampionGridViewModel] Colección _allChampions está vacía, procediendo a cargar desde servicio.");
-                var champs = await CdragonDataService.GetChampionSummariesAsync();
-                if (champs != null)
+                var championsToRelease = _allChampions.ToList();
+                System.Windows.Application.Current?.Dispatcher.Invoke(() => _allChampions.Clear());
+                foreach (var champ in championsToRelease)
                 {
-                    // Limpiar antes de añadir para evitar duplicados si esto se llama múltiples veces
-                    System.Windows.Application.Current?.Dispatcher.Invoke(() => _allChampions.Clear());
+                    champ.ReleaseImage();
+                }
+                Debug.WriteLine("[ChampionGridViewModel] _allChampions limpiada antes de cargar nuevos datos.");
+            }
 
-                    foreach (var champ in champs.OrderBy(c => c.Name))
-                    {
-                        if (champ.Roles == null) champ.Roles = new List<string>();
-                        System.Windows.Application.Current?.Dispatcher.Invoke(() => _allChampions.Add(champ));
-                    }
-                    Debug.WriteLine($"[ChampionGridViewModel] Added {_allChampions.Count} champions to collection.");
-                }
-                else
+
+            var champs = await CdragonDataService.GetChampionSummariesAsync();
+            if (champs != null)
+            {
+                foreach (var champ in champs.OrderBy(c => c.Name))
                 {
-                    Debug.WriteLine("[ChampionGridViewModel] Failed to load champions from service.");
-                    System.Windows.Application.Current?.Dispatcher.Invoke(() => {
-                        System.Windows.MessageBox.Show("Failed to load champions.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    });
-                    IsLoading = false; // Asegurar que IsLoading se ponga a false si hay error
-                    return;
+                    if (champ.Roles == null) champ.Roles = new List<string>();
+                    System.Windows.Application.Current?.Dispatcher.Invoke(() => _allChampions.Add(champ));
                 }
+                Debug.WriteLine($"[ChampionGridViewModel] Added {_allChampions.Count} champions to collection.");
+
+                PopulateRoles();
+                System.Windows.Application.Current?.Dispatcher.Invoke(() => ChampionsView.Refresh());
+                Debug.WriteLine("[ChampionGridViewModel] Roles populated and ChampionsView refreshed.");
             }
             else
             {
-                Debug.WriteLine("[ChampionGridViewModel] _allChampions ya tiene datos, refrescando roles y vista.");
+                Debug.WriteLine("[ChampionGridViewModel] Failed to load champions from service.");
+                System.Windows.Application.Current?.Dispatcher.Invoke(() => {
+                    System.Windows.MessageBox.Show("Failed to load champions.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
             }
 
-
-            PopulateRoles(); // Esto debería estar en el hilo de UI o usar Dispatcher si se llama desde otro hilo
-            System.Windows.Application.Current?.Dispatcher.Invoke(() => ChampionsView.Refresh());
-            Debug.WriteLine("[ChampionGridViewModel] Roles populated and ChampionsView refreshed.");
-
-            IsLoading = false; // Poner IsLoading a false al final
+            IsLoading = false;
             Debug.WriteLine("[ChampionGridViewModel] LoadChampionsAsync FINALIZADO.");
         }
 
