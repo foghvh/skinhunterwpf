@@ -3,6 +3,7 @@ using SkinHunterWPF.Models;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using System.Threading.Tasks; // Necesario para Task
 
 namespace SkinHunterWPF.Services
 {
@@ -34,7 +35,7 @@ namespace SkinHunterWPF.Services
         {
             var viewModel = GetViewModel<TViewModel>();
             SetCurrentViewModel(viewModel);
-            if (viewModel is ChampionGridViewModel cgvm && !cgvm.ChampionsView.Cast<object>().Any())
+            if (viewModel is ChampionGridViewModel cgvm && (cgvm.ChampionsView == null || !cgvm.ChampionsView.Cast<object>().Any()))
             {
                 _ = cgvm.LoadChampionsCommand.ExecuteAsync(null);
             }
@@ -57,8 +58,8 @@ namespace SkinHunterWPF.Services
             if (typeof(TViewModel) == typeof(SkinDetailViewModel) && parameter is Skin skinToShow)
             {
                 var viewModel = _serviceProvider.GetRequiredService<SkinDetailViewModel>();
-                viewModel.LoadSkin(skinToShow);
                 MainVM.DialogViewModel = viewModel;
+                _ = viewModel.LoadSkinAsync(skinToShow);
             }
             else
             {
@@ -83,17 +84,20 @@ namespace SkinHunterWPF.Services
                 if (currentType != previousType)
                 {
                     MainVM.CurrentViewModel = _previousViewModel;
-                    _previousViewModel = _serviceProvider.GetService<ChampionGridViewModel>();
+                    // Determinar cuál era el _previousPreviousViewModel o ir a la vista por defecto.
+                    // Por ahora, si el anterior no es ChampionGrid, y el actual es ChampionGrid, _previousViewModel se pone a null.
+                    // Si el anterior era ChampionGrid, al volver a él, _previousViewModel se pone a null.
+                    _previousViewModel = null; // O una lógica más compleja para múltiples niveles de "atrás"
                 }
-                else
+                else // Si estamos en la misma vista (ej. detalles y volvemos a detalles, aunque no debería pasar con esta lógica)
                 {
-                    NavigateTo<ChampionGridViewModel>();
+                    NavigateTo<ChampionGridViewModel>(); // Ir a la vista por defecto
                 }
 
             }
             else
             {
-                NavigateTo<ChampionGridViewModel>();
+                NavigateTo<ChampionGridViewModel>(); // Vista por defecto si no hay historial simple
             }
         }
     }

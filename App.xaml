@@ -315,7 +315,7 @@
                                             BorderBrush="{TemplateBinding BorderBrush}"
                                             BorderThickness="{TemplateBinding BorderThickness}"
                                             CornerRadius="3"/>
-                                <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                <ScrollViewer x:Name="PART_ContentHost" Margin="0,0,0,0" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                                 <TextBlock Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
                                                Foreground="{StaticResource ForegroundGray}"
                                                Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"

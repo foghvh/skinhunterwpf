@@ -33,8 +33,8 @@
             <Setter Property="Margin" Value="4"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Width" Value="95"/>
-            <Setter Property="Height" Value="105"/>
+            <Setter Property="Width" Value="85"/>
+            <Setter Property="Height" Value="85"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
@@ -123,9 +123,9 @@
                     <TextBlock Text="Chromas" Foreground="{StaticResource ForegroundColor}" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
                     <TabControl Padding="0" Margin="0,0,0,0">
                         <TabItem Header="Circles">
-                            <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <TextBlock Text="Select a variation to download." Foreground="{StaticResource ForegroundLightGray}" FontSize="12" Margin="0,8,0,8" FontStyle="Italic"/>
-                                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="260" Padding="5,0,5,0" HorizontalScrollBarVisibility="Disabled">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="260" Padding="5,0,30,0" HorizontalScrollBarVisibility="Disabled">
                                     <ItemsControl ItemsSource="{Binding AvailableChromas}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
@@ -150,9 +150,9 @@
                             </StackPanel>
                         </TabItem>
                         <TabItem Header="Images">
-                            <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <TextBlock Text="Select a variation to download." Foreground="{StaticResource ForegroundLightGray}" FontSize="12" Margin="0,8,0,8" FontStyle="Italic"/>
-                                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="260" Padding="5,0,5,0" HorizontalScrollBarVisibility="Disabled">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="260" Padding="5,0,30,0" HorizontalScrollBarVisibility="Disabled">
                                     <ItemsControl ItemsSource="{Binding AvailableChromas}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>

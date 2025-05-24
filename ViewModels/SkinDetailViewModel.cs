@@ -1,12 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SkinHunterWPF.Models;
+using SkinHunterWPF.Services;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using System.Windows; // Se mantiene para MessageBoxButton, MessageBoxImage
+using System.Windows;
 using System.Diagnostics;
 
 namespace SkinHunterWPF.ViewModels
@@ -18,8 +19,7 @@ namespace SkinHunterWPF.ViewModels
         [ObservableProperty]
         private Skin? _selectedSkin;
 
-        [ObservableProperty]
-        private ObservableCollection<Chroma> _availableChromas = new();
+        public ObservableCollection<Chroma> AvailableChromas { get; } = [];
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDefaultSelected))]
@@ -50,20 +50,22 @@ namespace SkinHunterWPF.ViewModels
         public SkinDetailViewModel(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            Debug.WriteLine("[SkinDetailViewModel] Constructor called.");
         }
 
-        public void LoadSkin(Skin skin)
+        public async Task LoadSkinAsync(Skin skin)
         {
-            Debug.WriteLine($"[SkinDetailViewModel] LoadSkin called for Skin ID: {skin.Id} ('{skin.Name}')");
-            SelectedSkin = skin;
-            AvailableChromas.Clear();
-            Debug.WriteLine($"[SkinDetailViewModel] AvailableChromas cleared.");
+            IsLoading = true;
+            Debug.WriteLine($"[SkinDetailViewModel] LoadSkinAsync para Skin ID: {skin.Id} ('{skin.Name}')");
 
-            if (skin.Chromas != null && skin.Chromas.Any())
+            await CdragonDataService.EnrichSkinWithSupabaseChromaDataAsync(skin);
+            SelectedSkin = skin;
+
+            AvailableChromas.Clear();
+            Debug.WriteLine($"[SkinDetailViewModel] AvailableChromas borrados. Procesando {SelectedSkin.Chromas?.Count ?? 0} chromas.");
+
+            if (SelectedSkin.Chromas != null && SelectedSkin.Chromas.Any())
             {
-                Debug.WriteLine($"[SkinDetailViewModel] Skin has {skin.Chromas.Count} chromas to process.");
-                foreach (var chroma in skin.Chromas)
+                foreach (var chroma in SelectedSkin.Chromas)
                 {
                     if (chroma != null)
                     {
@@ -72,16 +74,16 @@ namespace SkinHunterWPF.ViewModels
                         Debug.WriteLine($"[SkinDetailViewModel] Added Chroma ID: {chroma.Id}, Name: '{chroma.Name}' to AvailableChromas.");
                     }
                 }
-                Debug.WriteLine($"[SkinDetailViewModel] Finished processing chromas. Final AvailableChromas count: {AvailableChromas.Count}");
+                Debug.WriteLine($"[SkinDetailViewModel] Procesamiento de chromas finalizado. Count: {AvailableChromas.Count}");
             }
             else
             {
-                Debug.WriteLine($"[SkinDetailViewModel] Skin ID: {skin.Id} has no chromas.");
+                Debug.WriteLine($"[SkinDetailViewModel] Skin ID: {SelectedSkin.Id} no tiene chromas después del enriquecimiento.");
             }
 
             SelectedChroma = null;
             DownloadSkinCommand.NotifyCanExecuteChanged();
-            RefreshChromaSelections(null);
+            IsLoading = false;
         }
 
         public bool CanDownload()
@@ -95,7 +97,6 @@ namespace SkinHunterWPF.ViewModels
             IsLoading = true;
             var skinOrChromaName = IsDefaultSelected ? SelectedSkin?.Name : SelectedChroma?.Name;
             var idToDownload = IsDefaultSelected ? SelectedSkin?.Id : SelectedChroma?.Id;
-            Debug.WriteLine($"[SkinDetailViewModel] DownloadSkinAsync: Downloading '{skinOrChromaName}' (ID: {idToDownload})");
 
             await Task.Delay(1500);
 
@@ -103,26 +104,20 @@ namespace SkinHunterWPF.ViewModels
             DownloadSkinCommand.NotifyCanExecuteChanged();
 
             IsLoading = false;
-            System.Windows.MessageBox.Show($"'{skinOrChromaName}' (ID: {idToDownload}) download initiated!", "Download", MessageBoxButton.OK, MessageBoxImage.Information); // Calificado aquí
+            System.Windows.MessageBox.Show($"'{skinOrChromaName}' (ID: {idToDownload}) download initiated!", "Download", MessageBoxButton.OK, MessageBoxImage.Information);
 
             CloseDialog();
         }
 
-
         [RelayCommand]
         private void CloseDialog()
         {
-            Debug.WriteLine("[SkinDetailViewModel] CloseDialog called.");
             var mainViewModel = _serviceProvider.GetService<MainViewModel>();
             mainViewModel?.CloseDialogCommand.Execute(null);
         }
 
         private void SetDefaultSelection()
         {
-            if (SelectedChroma != null)
-            {
-                SelectedChroma.IsSelected = false;
-            }
             SelectedChroma = null;
             RefreshChromaSelections(null);
         }
@@ -132,22 +127,13 @@ namespace SkinHunterWPF.ViewModels
         {
             if (clickedChroma == null) return;
 
-            Debug.WriteLine($"[SkinDetailViewModel] ToggleChromaSelection called for Chroma ID: {clickedChroma.Id}");
-
             if (SelectedChroma == clickedChroma)
             {
-                Debug.WriteLine($"[SkinDetailViewModel] Deselecting Chroma ID: {clickedChroma.Id}");
                 SetDefaultSelection();
             }
             else
             {
-                Debug.WriteLine($"[SkinDetailViewModel] Selecting Chroma ID: {clickedChroma.Id}");
-                if (SelectedChroma != null)
-                {
-                    SelectedChroma.IsSelected = false;
-                }
                 SelectedChroma = clickedChroma;
-                SelectedChroma.IsSelected = true;
                 RefreshChromaSelections(SelectedChroma);
             }
         }
@@ -157,12 +143,6 @@ namespace SkinHunterWPF.ViewModels
             foreach (var ch in AvailableChromas)
             {
                 ch.IsSelected = (ch == selected);
-            }
-            var tempList = AvailableChromas.ToList();
-            AvailableChromas.Clear();
-            foreach (var item in tempList)
-            {
-                AvailableChromas.Add(item);
             }
         }
     }

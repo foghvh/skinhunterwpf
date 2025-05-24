@@ -3,6 +3,8 @@ using SkinHunterWPF.Services;
 using System.Windows.Media.Imaging;
 using System;
 using System.Threading.Tasks;
+using System.Diagnostics;
+// No se necesita 'using System.Windows;' si System.Windows.Application se califica completamente
 
 namespace SkinHunterWPF.Models
 {
@@ -22,7 +24,7 @@ namespace SkinHunterWPF.Models
         [ObservableProperty]
         private BitmapImage? _imageSource;
 
-        private readonly string? _imagePath; // Marcado como readonly
+        private readonly string? _imagePath;
 
         public int ChampionId { get; }
         public Skin? OriginalSkinObject { get; }
@@ -52,27 +54,67 @@ namespace SkinHunterWPF.Models
             OriginalChampionObject = parentChampion;
         }
 
-        public Task LoadImageAsync()
+        private bool _isImageLoadingOrLoaded = false;
+
+        public async Task LoadImageAsync()
         {
-            if (ImageSource == null && !string.IsNullOrEmpty(_imagePath)) // Usar propiedad generada ImageSource
+            if (_isImageLoadingOrLoaded || string.IsNullOrEmpty(_imagePath))
             {
-                try
+                return;
+            }
+
+            _isImageLoadingOrLoaded = true;
+
+            BitmapImage? loadedBitmap = null;
+            Uri? imageUri = null;
+
+            try
+            {
+                string fullUrl = CdragonDataService.GetAssetUrl(_imagePath);
+                if (Uri.TryCreate(fullUrl, UriKind.Absolute, out imageUri))
                 {
-                    var bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.UriSource = new Uri(CdragonDataService.GetAssetUrl(_imagePath), UriKind.Absolute);
-                    bitmap.DecodePixelWidth = 64;
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.EndInit();
-                    bitmap.Freeze();
-                    ImageSource = bitmap; // Usar propiedad generada
+
+                    if (System.Windows.Application.Current != null) // Calificado aquí
+                    {
+                        await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => // Calificado aquí
+                        {
+                            BitmapImage bitmap = new();
+                            bitmap.BeginInit();
+                            bitmap.UriSource = imageUri;
+                            bitmap.DecodePixelWidth = 64;
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            try
+                            {
+                                bitmap.EndInit();
+                                if (bitmap.CanFreeze)
+                                {
+                                    bitmap.Freeze();
+                                }
+                                loadedBitmap = bitmap; // Asignar a variable local primero
+                            }
+                            catch (Exception exEndInit)
+                            {
+                                Debug.WriteLine($"Error en EndInit para imagen {imageUri}: {exEndInit.Message}");
+                                loadedBitmap = null;
+                            }
+                        });
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error loading search result image {_imagePath}: {ex.Message}");
+                    Debug.WriteLine($"[SearchResultItem] URL de imagen inválida generada para: {_imagePath}");
                 }
             }
-            return Task.CompletedTask; // Para satisfacer async y quitar advertencia CS1998
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error creando Uri o despachando carga de imagen {_imagePath}: {ex.Message}");
+                loadedBitmap = null;
+            }
+
+            ImageSource = loadedBitmap; // Asignar fuera del Dispatcher.InvokeAsync si es necesario,
+                                        // o si loadedBitmap se establece correctamente dentro.
+                                        // Dado que ImageSource es [ObservableProperty], la asignación aquí notificará el cambio.
+                                        // Si la asignación se hace dentro del Dispatcher, también es válido.
         }
     }
 }

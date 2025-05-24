@@ -28,6 +28,19 @@ namespace SkinHunterWPF.Views
 }
 /// Views End of ChampionGridView.xaml.cs ///
 
+/// Views Start of OmnisearchDialog.xaml.cs ///
+﻿namespace SkinHunterWPF.Views
+{
+    public partial class OmnisearchDialog : System.Windows.Controls.UserControl
+    {
+        public OmnisearchDialog()
+        {
+            InitializeComponent();
+        }
+    }
+}
+/// Views End of OmnisearchDialog.xaml.cs ///
+
 /// Views Start of SkinDetailDialog.xaml.cs ///
 ﻿using System.Windows.Navigation;
 using System.Diagnostics;
@@ -212,6 +225,146 @@ namespace SkinHunterWPF.Views
     </Grid>
 </UserControl>
 /// Views End of ChampionGridView.xaml ///
+
+/// Views Start of OmnisearchDialog.xaml ///
+<UserControl x:Class="SkinHunterWPF.Views.OmnisearchDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:SkinHunterWPF.ViewModels"
+             xmlns:m="clr-namespace:SkinHunterWPF.Models"
+             xmlns:converters="clr-namespace:SkinHunterWPF.Converters"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=vm:OmnisearchViewModel, IsDesignTimeCreatable=True}"
+             Width="600" MaxHeight="700" MinHeight="150" 
+             d:DesignHeight="600" d:DesignWidth="600">
+
+    <Border Background="{StaticResource CardBackgroundColor}" CornerRadius="8" BorderBrush="{StaticResource CardBorderColor}" BorderThickness="0.5" Padding="0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Row="0" Margin="20,15,15,10" LastChildFill="True">
+                <Button DockPanel.Dock="Right" Command="{Binding CloseOmnisearchDialogCommand}" Style="{StaticResource ButtonIconOnlyStyle}" VerticalAlignment="Center" ToolTip="Close" Width="28" Height="28">
+                    <Path Data="M0,0 L10,10 M10,0 L0,10" Stroke="{StaticResource ForegroundGray}" StrokeThickness="1.8" Width="10" Height="10"/>
+                </Button>
+                <TextBlock Text="Search" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{StaticResource ForegroundColor}"/>
+            </DockPanel>
+
+            <Border Grid.Row="1" Background="{StaticResource HeaderBackgroundColor}" Padding="15,12" Margin="20,5,20,15" CornerRadius="6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBox Grid.Column="0" Style="{StaticResource TextBoxWithPlaceholder}" Tag="Search..."
+                             Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}"
+                             Height="40" VerticalContentAlignment="Center" FontSize="16" Padding="35,0,5,0"/>
+                             <!-- SECCIÓN <TextBox.Resources> ELIMINADA -->
+                    
+                    <Path Data="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L21.5,20L20,21.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" 
+                          Fill="{StaticResource ForegroundGray}" Width="16" Height="16" Stretch="Uniform"
+                          HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" IsHitTestVisible="False"/>
+
+
+                    <Popup Placement="Bottom" PlacementTarget="{Binding ElementName=FilterButton}" IsOpen="{Binding IsFilterPopupOpen, Mode=TwoWay}" AllowsTransparency="True" StaysOpen="False">
+                        <Border Background="{StaticResource CardBackgroundColor}" BorderBrush="{StaticResource CardBorderColor}" BorderThickness="1" Padding="12" CornerRadius="4" Margin="0,5,0,0">
+                            <StackPanel>
+                                <CheckBox IsChecked="{Binding ShowChampionsFilter}" Content="Champions" Foreground="{StaticResource ForegroundColor}" Margin="0,0,0,8" Style="{StaticResource ModernCheckBoxStyle}"/>
+                                <CheckBox IsChecked="{Binding ShowSkinsFilter}" Content="Skins" Foreground="{StaticResource ForegroundColor}" Style="{StaticResource ModernCheckBoxStyle}"/>
+                            </StackPanel>
+                        </Border>
+                    </Popup>
+                    
+                    <Button x:Name="FilterButton" Grid.Column="1" Style="{StaticResource ButtonIconOnlyStyle}" Margin="8,0,0,0" Width="40" Height="40"
+                            Command="{Binding ToggleFilterPopupCommand}" ToolTip="Filters">
+                        <Path Data="M12,16A2,2 0 0,0 14,14A2,2 0 0,0 12,12A2,2 0 0,0 10,14A2,2 0 0,0 12,16M12,10A2,2 0 0,0 14,8A2,2 0 0,0 12,6A2,2 0 0,0 10,8A2,2 0 0,0 12,10M12,4A2,2 0 0,0 14,2A2,2 0 0,0 12,0A2,2 0 0,0 10,2A2,2 0 0,0 12,4Z" 
+                              Fill="{StaticResource ForegroundGray}" Width="4" Height="16" Stretch="Uniform"/>
+                    </Button>
+                </Grid>
+            </Border>
+            
+            <Grid Grid.Row="2" Margin="20,0,20,20">
+                <ProgressBar Style="{StaticResource LoadingProgressBarStyle}" 
+                             Visibility="{Binding IsLoadingSearchResults, Converter={StaticResource BooleanToVisibilityConverter}}"
+                             Width="35" Height="35" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" 
+                              Visibility="{Binding IsLoadingSearchResults, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    <ItemsControl ItemsSource="{Binding SearchResultsView}">
+                        <ItemsControl.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" Foreground="{StaticResource ForegroundLightGray}" FontSize="13" FontWeight="SemiBold" Margin="0,10,0,5"/>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ItemsControl.GroupStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type m:SearchResultItem}">
+                                <Button Command="{Binding DataContext.SelectResultCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                        CommandParameter="{Binding}"
+                                        Style="{StaticResource ButtonTransparentStyle}" HorizontalContentAlignment="Stretch" Margin="0,3">
+                                    <Border Background="{StaticResource HeaderBackgroundColor}" Padding="10" CornerRadius="4"
+                                            BorderThickness="1" BorderBrush="Transparent">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <Border Grid.Column="0" Width="54" Height="54" CornerRadius="3" Margin="0,0,12,0" Background="#222226">
+                                                <Grid>
+                                                    <Border Background="#303035" Visibility="{Binding ImageSource, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=True, FallbackValue=Visible}"/>
+                                                    <Image Source="{Binding ImageSource}" Stretch="Uniform" RenderOptions.BitmapScalingMode="Fant">
+                                                        <Image.Style>
+                                                            <Style TargetType="Image">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ImageSource}" Value="{x:Null}"/>
+                                                                    <DataTrigger Binding="{Binding ImageSource, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=False}" Value="Visible">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Image.Style>
+                                                    </Image>
+                                                </Grid>
+                                            </Border>
+                                            
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" Foreground="{StaticResource ForegroundColor}" FontSize="15" FontWeight="Medium" TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Text="{Binding DisplayType}" Foreground="{StaticResource ForegroundGray}" FontSize="12"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Effect" Value="{x:Null}"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="BorderBrush" Value="{StaticResource BorderAccentColor}"/>
+                                                         <Setter Property="Background" Value="{StaticResource ButtonHoverBrush}"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>
+/// Views End of OmnisearchDialog.xaml ///
 
 /// Views Start of SkinDetailDialog.xaml ///
 <UserControl x:Class="SkinHunterWPF.Views.SkinDetailDialog"
@@ -442,12 +595,13 @@ namespace SkinHunterWPF.ViewModels
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SkinHunterWPF.Models;
-using SkinHunterWPF.Services;
+using SkinHunterWPF.Services; // Asegúrate que este using está presente
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Windows; // Se mantiene para MessageBoxButton, MessageBoxImage
+using System.Windows;
 using System;
+using System.Diagnostics;
 
 namespace SkinHunterWPF.ViewModels
 {
@@ -466,19 +620,46 @@ namespace SkinHunterWPF.ViewModels
             _navigationService = navigationService;
         }
 
+        public void ReleaseResourcesForTray()
+        {
+            Debug.WriteLine($"[ChampionDetailViewModel] Liberando recursos para la bandeja (Campeón: {Champion?.Name}).");
+            IsLoading = true;
+            Champion?.ReleaseImage();
+            Champion = null;
+            Skins.Clear();
+            IsLoading = false;
+            Debug.WriteLine("[ChampionDetailViewModel] Recursos liberados.");
+        }
+
+        public void PrepareForReload()
+        {
+            Debug.WriteLine($"[ChampionDetailViewModel] Preparando para recarga (Campeón anterior: {Champion?.Name}).");
+            IsLoading = true;
+            Champion?.ReleaseImage();
+            Champion = null;
+            Skins.Clear();
+        }
+
         [RelayCommand]
         public async Task LoadChampionAsync(int championId)
         {
-            if (Champion?.Id == championId && Skins.Count > 0)
+            if (Champion?.Id == championId && Skins.Any())
             {
-                Console.WriteLine($"DEBUG VM: Champion {championId} already loaded with {Skins.Count} skins. Skipping reload.");
+                Debug.WriteLine($"[ChampionDetailViewModel] Campeón {championId} ya cargado con {Skins.Count} skins. Omitiendo recarga.");
                 IsLoading = false;
                 return;
             }
 
+            Debug.WriteLine($"[ChampionDetailViewModel] LoadChampionAsync para ID: {championId}");
             IsLoading = true;
-            Skins.Clear();
-            Champion = null;
+
+            // Limpiar si es un campeón diferente O si las skins están vacías (ej. después de ReleaseResources)
+            if (Champion?.Id != championId || !Skins.Any())
+            {
+                Skins.Clear();
+                Champion?.ReleaseImage();
+                Champion = null;
+            }
 
 
             var details = await CdragonDataService.GetChampionDetailsAsync(championId);
@@ -487,32 +668,28 @@ namespace SkinHunterWPF.ViewModels
             {
                 Champion = details;
 
-                Skins.Clear();
-                if (details.Skins != null && details.Skins.Count > 0)
+                if (details.Skins != null && details.Skins.Any())
                 {
-                    int skinsAddedCount = 0;
-                    foreach (var skin in details.Skins)
+                    foreach (var skin in details.Skins.Where(s =>
+                                !s.Name.Equals(details.Name, StringComparison.OrdinalIgnoreCase) &&
+                                !s.Name.Equals($"Base {details.Name}", StringComparison.OrdinalIgnoreCase) &&
+                                !s.Name.Contains("Original", StringComparison.OrdinalIgnoreCase)))
                     {
-                        if (!skin.Name.Equals($"{details.Name}", StringComparison.OrdinalIgnoreCase) &&
-                            !skin.Name.Equals($"Base {details.Name}", StringComparison.OrdinalIgnoreCase) &&
-                            !skin.Name.Contains("Original", StringComparison.OrdinalIgnoreCase))
-                        {
-                            Skins.Add(skin);
-                            skinsAddedCount++;
-                        }
+                        Skins.Add(skin);
                     }
-                    Console.WriteLine($"DEBUG VM: Loaded {skinsAddedCount} non-base/original skins for {Champion.Name}. Total in details.Skins: {details.Skins.Count}");
+                    Debug.WriteLine($"[ChampionDetailViewModel] Cargadas {Skins.Count} skins para {Champion.Name}.");
                 }
                 else
                 {
-                    Console.WriteLine($"DEBUG VM: details.Skins was null or empty for {Champion.Name}.");
+                    Debug.WriteLine($"[ChampionDetailViewModel] No se encontraron skins (o lista vacía) para {Champion?.Name}.");
                 }
             }
             else
             {
-                System.Windows.MessageBox.Show($"Failed to load details for Champion ID: {championId}", "Error", MessageBoxButton.OK, MessageBoxImage.Error); // Calificado aquí
+                System.Windows.MessageBox.Show($"Failed to load details for Champion ID: {championId}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             IsLoading = false;
+            Debug.WriteLine($"[ChampionDetailViewModel] LoadChampionAsync para ID: {championId} FINALIZADO. IsLoading={IsLoading}");
         }
 
         [RelayCommand]
@@ -537,17 +714,18 @@ namespace SkinHunterWPF.ViewModels
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SkinHunterWPF.Models;
-using SkinHunterWPF.Services;
+using SkinHunterWPF.Services; // Asegúrate que este using está presente
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.ComponentModel;
 using System;
-using System.Windows; // Se mantiene para MessageBoxButton, MessageBoxImage
+using System.Windows;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Threading;
+using System.Windows.Media.Imaging;
 
 namespace SkinHunterWPF.ViewModels
 {
@@ -575,15 +753,41 @@ namespace SkinHunterWPF.ViewModels
             AllRoles.Add("All");
         }
 
+        public void ReleaseResourcesForTray()
+        {
+            Debug.WriteLine("[ChampionGridViewModel] Liberando recursos para la bandeja...");
+            IsLoading = true;
+            if (_allChampions.Any())
+            {
+                var championsToRelease = _allChampions.ToList();
+                System.Windows.Application.Current?.Dispatcher.Invoke(() => _allChampions.Clear());
+
+                foreach (var champ in championsToRelease)
+                {
+                    champ.ReleaseImage();
+                }
+
+                System.Windows.Application.Current?.Dispatcher.Invoke(() => ChampionsView?.Refresh());
+                Debug.WriteLine($"[ChampionGridViewModel] Colección _allChampions limpiada. Count: {_allChampions.Count}");
+            }
+            else
+            {
+                Debug.WriteLine("[ChampionGridViewModel] _allChampions ya estaba vacía.");
+            }
+            IsLoading = false;
+            Debug.WriteLine("[ChampionGridViewModel] Recursos liberados.");
+        }
+
+
         partial void OnSearchTextChanged(string? value)
         {
-            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() => ChampionsView.Refresh(), DispatcherPriority.Background); // Calificado aquí
+            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() => ChampionsView.Refresh(), DispatcherPriority.Background);
         }
 
         partial void OnSelectedRoleChanged(string? value)
         {
             Debug.WriteLine($"[ChampionGridViewModel] Selected Role Changed: {value}");
-            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() => ChampionsView.Refresh(), DispatcherPriority.Background); // Calificado aquí
+            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() => ChampionsView.Refresh(), DispatcherPriority.Background);
         }
 
         private bool FilterChampions(object item)
@@ -623,79 +827,75 @@ namespace SkinHunterWPF.ViewModels
             var sortedRoles = uniqueRoles.OrderBy(r => r).ToList();
             string? currentSelection = SelectedRole;
 
-            AllRoles.Clear();
-            AllRoles.Add("All");
-            foreach (var role in sortedRoles)
-            {
-                string displayRole = role.Length > 0 ? char.ToUpper(role[0]) + role.Substring(1) : role;
-                AllRoles.Add(displayRole);
-            }
+            System.Windows.Application.Current?.Dispatcher.Invoke(() => {
+                string? actualCurrentSelection = SelectedRole;
+                AllRoles.Clear();
+                AllRoles.Add("All");
+                foreach (var role in sortedRoles)
+                {
+                    string displayRole = role.Length > 0 ? char.ToUpper(role[0]) + role.Substring(1) : role;
+                    AllRoles.Add(displayRole);
+                }
 
-            if (!string.IsNullOrEmpty(currentSelection) && AllRoles.Contains(currentSelection))
-            {
-                if (SelectedRole != currentSelection) SelectedRole = currentSelection;
-            }
-            else
-            {
-                if (SelectedRole != "All") SelectedRole = "All";
-            }
+                if (!string.IsNullOrEmpty(actualCurrentSelection) && AllRoles.Contains(actualCurrentSelection))
+                {
+                    if (SelectedRole != actualCurrentSelection) SelectedRole = actualCurrentSelection;
+                }
+                else
+                {
+                    if (SelectedRole != "All") SelectedRole = "All";
+                }
+            });
         }
 
         [RelayCommand]
         public async Task LoadChampionsAsync()
         {
-            if (IsLoading) return;
-
-            if (_allChampions.Any() && AllRoles.Count > 1)
+            if (IsLoading && _allChampions.Any())
             {
-                Debug.WriteLine("[ChampionGridViewModel] Champions and Roles likely loaded. Forcing UI Refresh.");
-                IsLoading = true;
-                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { // Calificado aquí
-                    PopulateRoles();
-                    ChampionsView.Refresh();
-                }, DispatcherPriority.DataBind);
-                IsLoading = false;
+                Debug.WriteLine("[ChampionGridViewModel] LoadChampionsAsync llamado pero ya está cargando con datos, retornando.");
                 return;
             }
 
             IsLoading = true;
-            Debug.WriteLine("[ChampionGridViewModel] Initial Loading Champions...");
+            Debug.WriteLine("[ChampionGridViewModel] LoadChampionsAsync INICIADO.");
 
-            foreach (var champ in _allChampions)
+            if (_allChampions.Any()) // Limpiar si ya hay datos, para asegurar que una recarga sea fresca
             {
-                champ.CancelCurrentLoad();
+                var championsToRelease = _allChampions.ToList();
+                System.Windows.Application.Current?.Dispatcher.Invoke(() => _allChampions.Clear());
+                foreach (var champ in championsToRelease)
+                {
+                    champ.ReleaseImage();
+                }
+                Debug.WriteLine("[ChampionGridViewModel] _allChampions limpiada antes de cargar nuevos datos.");
             }
-            _allChampions.Clear();
 
-            AllRoles.Clear();
-            AllRoles.Add("All");
-            SelectedRole = "All";
 
             var champs = await CdragonDataService.GetChampionSummariesAsync();
-
             if (champs != null)
             {
                 foreach (var champ in champs.OrderBy(c => c.Name))
                 {
                     if (champ.Roles == null) champ.Roles = new List<string>();
-                    _allChampions.Add(champ);
+                    System.Windows.Application.Current?.Dispatcher.Invoke(() => _allChampions.Add(champ));
                 }
                 Debug.WriteLine($"[ChampionGridViewModel] Added {_allChampions.Count} champions to collection.");
 
-                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { // Calificado aquí
-                    PopulateRoles();
-                    ChampionsView.Refresh();
-                    Debug.WriteLine("[ChampionGridViewModel] Roles populated and ChampionsView refreshed.");
-                }, DispatcherPriority.DataBind);
+                PopulateRoles();
+                System.Windows.Application.Current?.Dispatcher.Invoke(() => ChampionsView.Refresh());
+                Debug.WriteLine("[ChampionGridViewModel] Roles populated and ChampionsView refreshed.");
             }
             else
             {
                 Debug.WriteLine("[ChampionGridViewModel] Failed to load champions from service.");
-                System.Windows.Application.Current?.Dispatcher.Invoke(() => { // Calificado aquí
-                    System.Windows.MessageBox.Show("Failed to load champions.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); // Calificado aquí
+                System.Windows.Application.Current?.Dispatcher.Invoke(() => {
+                    System.Windows.MessageBox.Show("Failed to load champions.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 });
             }
+
             IsLoading = false;
+            Debug.WriteLine("[ChampionGridViewModel] LoadChampionsAsync FINALIZADO.");
         }
 
         [RelayCommand]
@@ -716,30 +916,28 @@ using CommunityToolkit.Mvvm.Input;
 using SkinHunterWPF.Services;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Windows; // Se mantiene para MessageBoxButton, MessageBoxImage
+using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Diagnostics;
 
 
 namespace SkinHunterWPF.ViewModels
 {
-    public partial class MainViewModel : BaseViewModel
+    public partial class MainViewModel(INavigationService navigationService, ChampionGridViewModel championGridVM, IServiceProvider serviceProvider) : BaseViewModel
     {
-        private readonly INavigationService _navigationService;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly INavigationService _navigationService = navigationService;
+        private readonly IServiceProvider _serviceProvider = serviceProvider;
 
         [ObservableProperty]
-        private BaseViewModel? _currentViewModel;
+        private BaseViewModel? _currentViewModel = championGridVM;
 
         [ObservableProperty]
         private BaseViewModel? _dialogViewModel;
 
-        public MainViewModel(INavigationService navigationService, ChampionGridViewModel championGridVM, IServiceProvider serviceProvider)
-        {
-            _navigationService = navigationService;
-            _serviceProvider = serviceProvider;
-            _currentViewModel = championGridVM;
-        }
+        [ObservableProperty]
+        private OmnisearchViewModel? _omnisearchDialogViewModel;
+
 
         public async Task EnsureInitialDataLoadedAsync()
         {
@@ -747,7 +945,8 @@ namespace SkinHunterWPF.ViewModels
             {
                 if (cgvm.ChampionsView == null || !cgvm.ChampionsView.Cast<object>().Any())
                 {
-                    await cgvm.LoadChampionsCommand.ExecuteAsync(null);
+                    if (cgvm.LoadChampionsCommand.CanExecute(null))
+                        await cgvm.LoadChampionsCommand.ExecuteAsync(null);
                 }
             }
         }
@@ -759,10 +958,28 @@ namespace SkinHunterWPF.ViewModels
             DialogViewModel = null;
         }
 
+        // Usar [RelayCommand], el generador crea la versión Async si el método devuelve Task
+        [RelayCommand]
+        private async Task OpenOmnisearchDialogAsync()
+        {
+            if (OmnisearchDialogViewModel == null)
+            {
+                Debug.WriteLine("[MainViewModel] Creando instancia de OmnisearchViewModel.");
+                OmnisearchDialogViewModel = _serviceProvider.GetRequiredService<OmnisearchViewModel>();
+            }
+            Debug.WriteLine("[MainViewModel] Asegurando datos para OmnisearchViewModel.");
+            if (OmnisearchDialogViewModel != null)
+            {
+                await OmnisearchDialogViewModel.EnsureDataLoadedAsync();
+            }
+            Debug.WriteLine("[MainViewModel] OmnisearchDialogViewModel listo para mostrarse.");
+        }
+
+
         [RelayCommand]
         private void NavigateToChampions()
         {
-            if (DialogViewModel == null)
+            if (DialogViewModel == null && OmnisearchDialogViewModel == null)
             {
                 _navigationService.NavigateTo<ChampionGridViewModel>();
             }
@@ -771,26 +988,284 @@ namespace SkinHunterWPF.ViewModels
         [RelayCommand]
         private void NavigateToInstalled()
         {
-            if (DialogViewModel == null)
-                System.Windows.MessageBox.Show("Installed View Not Implemented Yet."); // Calificado aquí
+            if (DialogViewModel == null && OmnisearchDialogViewModel == null)
+                System.Windows.MessageBox.Show("Installed View Not Implemented Yet.");
         }
 
+        // El comando generado para este método será OpenSearchCommand
         [RelayCommand]
-        private void OpenSearch()
+        private async Task OpenSearchAsync()
         {
             if (DialogViewModel == null)
-                System.Windows.MessageBox.Show("Search Not Implemented Yet."); // Calificado aquí
+            {
+                // El comando generado para OpenOmnisearchDialogAsync será OpenOmnisearchDialogCommand
+                if (OpenOmnisearchDialogCommand != null && OpenOmnisearchDialogCommand.CanExecute(null))
+                {
+                    await OpenOmnisearchDialogCommand.ExecuteAsync(null);
+                }
+            }
         }
 
         [RelayCommand]
         private void OpenProfile()
         {
-            if (DialogViewModel == null)
-                System.Windows.MessageBox.Show("Profile View Not Implemented Yet."); // Calificado aquí
+            if (DialogViewModel == null && OmnisearchDialogViewModel == null)
+                System.Windows.MessageBox.Show("Profile View Not Implemented Yet.");
         }
     }
 }
 /// ViewModels End of MainViewModel.cs ///
+
+/// ViewModels Start of OmnisearchViewModel.cs ///
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using SkinHunterWPF.Models;
+using SkinHunterWPF.Services;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Data;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
+
+
+namespace SkinHunterWPF.ViewModels
+{
+    public partial class OmnisearchViewModel : BaseViewModel
+    {
+        private readonly INavigationService? _navigationService;
+        private readonly IServiceProvider? _serviceProvider;
+        private List<ChampionSummary> _allChampionsMasterList = [];
+        private List<Skin> _allSkinsMasterList = [];
+        private Dictionary<int, ChampionSummary> _championMap = [];
+
+        [ObservableProperty]
+        private string? _query;
+
+        [ObservableProperty]
+        private bool _showChampionsFilter = true;
+
+        [ObservableProperty]
+        private bool _showSkinsFilter = true;
+
+        [ObservableProperty]
+        private bool _isFilterPopupOpen;
+
+        [ObservableProperty]
+        private bool _isLoadingSearchResults;
+
+        public ObservableCollection<SearchResultItem> SearchResults { get; } = [];
+        public ICollectionView SearchResultsView { get; }
+
+        public OmnisearchViewModel()
+        {
+            if (DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
+            {
+                Query = "Search...";
+                SearchResults.Add(new SearchResultItem(new ChampionSummary { Id = 1, Name = "Design Champion", SquarePortraitPath = "" }));
+                SearchResults.Add(new SearchResultItem(new Skin { Id = 1001, Name = "Design Skin", TilePath = "", ChampionId = 1 }, new ChampionSummary { Id = 1, Name = "Parent" }));
+            }
+            _navigationService = null;
+            _serviceProvider = null;
+            SearchResultsView = CollectionViewSource.GetDefaultView(SearchResults);
+            if (SearchResultsView.GroupDescriptions != null)
+            {
+                SearchResultsView.GroupDescriptions.Add(new PropertyGroupDescription("DisplayType"));
+            }
+        }
+
+        public OmnisearchViewModel(INavigationService navigationService, IServiceProvider serviceProvider)
+        {
+            _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            SearchResultsView = CollectionViewSource.GetDefaultView(SearchResults);
+            if (SearchResultsView.GroupDescriptions != null)
+            {
+                SearchResultsView.GroupDescriptions.Add(new PropertyGroupDescription("DisplayType"));
+            }
+        }
+
+        private bool _isDataLoaded = false;
+
+        public async Task EnsureDataLoadedAsync()
+        {
+            if (_isDataLoaded) return;
+            if (_serviceProvider == null) return;
+
+            IsLoading = true;
+            try
+            {
+                var champsTask = CdragonDataService.GetChampionSummariesAsync();
+                var skinsTask = CdragonDataService.GetAllSkinsAsync();
+                await Task.WhenAll(champsTask, skinsTask);
+
+                var champs = await champsTask;
+                if (champs != null)
+                {
+                    _allChampionsMasterList = champs;
+                    _championMap = champs.ToDictionary(c => c.Id);
+                }
+
+                var skinsDict = await skinsTask;
+                if (skinsDict != null)
+                {
+                    _allSkinsMasterList = skinsDict.Values
+                        .Where(s => {
+                            bool isBaseSkinName = false;
+                            if (_championMap.TryGetValue(s.ChampionId, out var parentChamp))
+                            {
+                                isBaseSkinName = s.Name.Equals(parentChamp.Name, StringComparison.OrdinalIgnoreCase) ||
+                                                 s.Name.Equals($"Base {parentChamp.Name}", StringComparison.OrdinalIgnoreCase);
+                            }
+                            return !isBaseSkinName && !s.Name.Contains("Original", StringComparison.OrdinalIgnoreCase);
+                        })
+                        .OrderBy(s => s.Name)
+                        .ToList();
+                }
+                _isDataLoaded = true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[OmnisearchViewModel] Error cargando datos maestros: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        partial void OnQueryChanged(string? value)
+        {
+            PerformSearch();
+        }
+
+        partial void OnShowChampionsFilterChanged(bool value)
+        {
+            PerformSearch();
+        }
+
+        partial void OnShowSkinsFilterChanged(bool value)
+        {
+            PerformSearch();
+        }
+
+        private CancellationTokenSource _searchCts = new();
+
+        private async void PerformSearch()
+        {
+            if (!_isDataLoaded && _serviceProvider != null)
+            {
+                await EnsureDataLoadedAsync();
+                if (!_isDataLoaded)
+                {
+                    SearchResults.Clear();
+                    return;
+                }
+            }
+            else if (!_isDataLoaded && _serviceProvider == null)
+            {
+                return;
+            }
+
+            _searchCts.Cancel();
+            _searchCts = new CancellationTokenSource();
+            var token = _searchCts.Token;
+            var currentQuery = Query;
+
+            SearchResults.Clear();
+
+            if (string.IsNullOrWhiteSpace(currentQuery) || currentQuery.Length < 1)
+            {
+                IsLoadingSearchResults = false;
+                return;
+            }
+
+            IsLoadingSearchResults = true;
+
+            try
+            {
+                await Task.Run(async () => {
+                    if (token.IsCancellationRequested) return;
+                    List<SearchResultItem> newResults = [];
+                    if (ShowChampionsFilter)
+                    {
+                        newResults.AddRange(_allChampionsMasterList
+                            .Where(c => c.Name.Contains(currentQuery, StringComparison.OrdinalIgnoreCase))
+                            .Select(c => new SearchResultItem(c)));
+                    }
+                    if (ShowSkinsFilter)
+                    {
+                        newResults.AddRange(_allSkinsMasterList
+                            .Where(s => s.Name.Contains(currentQuery, StringComparison.OrdinalIgnoreCase))
+                            .Select(s => new SearchResultItem(s, _championMap.TryGetValue(s.ChampionId, out var champ) ? champ : null)));
+                    }
+                    if (token.IsCancellationRequested) return;
+                    var orderedResults = newResults.OrderBy(r => r.Type).ThenBy(r => r.Name).Take(25).ToList();
+                    if (token.IsCancellationRequested) return;
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (!token.IsCancellationRequested)
+                        {
+                            foreach (var item in orderedResults)
+                            {
+                                SearchResults.Add(item);
+                                _ = item.LoadImageAsync();
+                            }
+                        }
+                    });
+                }, token);
+            }
+            catch (TaskCanceledException) { Debug.WriteLine("[OmnisearchViewModel] Búsqueda (Task.Run) cancelada."); }
+            catch (Exception ex) { Debug.WriteLine($"[OmnisearchViewModel] Error durante la búsqueda: {ex.Message}"); }
+            finally
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    IsLoadingSearchResults = false;
+                }
+            }
+        }
+
+        [RelayCommand]
+        private void SelectResult(SearchResultItem? selectedItem)
+        {
+            if (selectedItem == null || _navigationService == null) return;
+            CloseOmnisearchDialog();
+            if (selectedItem.Type == SearchResultType.Champion)
+            {
+                _navigationService.NavigateTo<ChampionDetailViewModel>(selectedItem.ChampionId);
+            }
+            else if (selectedItem.Type == SearchResultType.Skin && selectedItem.OriginalSkinObject != null)
+            {
+                _navigationService.ShowDialog<SkinDetailViewModel>(selectedItem.OriginalSkinObject);
+            }
+        }
+
+        [RelayCommand]
+        private void CloseOmnisearchDialog()
+        {
+            IsFilterPopupOpen = false;
+            if (_serviceProvider == null) return;
+            var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+            if (mainViewModel?.OmnisearchDialogViewModel == this)
+            {
+                mainViewModel.OmnisearchDialogViewModel = null;
+            }
+        }
+
+        [RelayCommand]
+        private void ToggleFilterPopup()
+        {
+            IsFilterPopupOpen = !IsFilterPopupOpen;
+        }
+    }
+}
+/// ViewModels End of OmnisearchViewModel.cs ///
 
 /// ViewModels Start of SkinDetailViewModel.cs ///
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
@@ -1447,7 +1922,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-// No se necesita 'using System.Windows;' si se califica Application.Current
 
 namespace SkinHunterWPF.Models
 {
@@ -1491,6 +1965,34 @@ namespace SkinHunterWPF.Models
             }
         }
 
+        public void ReleaseImage() // MÉTODO AÑADIDO/ASEGURADO
+        {
+            Debug.WriteLine($"[ChampionSummary] Liberando imagen para {Name}");
+            if (System.Windows.Application.Current != null)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (_championImageSourceField != _placeholderImage)
+                    {
+                        CancelCurrentLoad();
+                        ChampionImageSource = _placeholderImage;
+                        Debug.WriteLine($"[ChampionSummary] Imagen para {Name} establecida a placeholder.");
+                    }
+                });
+            }
+            else
+            {
+                if (_championImageSourceField != _placeholderImage)
+                {
+                    CancelCurrentLoad();
+                    _championImageSourceField = _placeholderImage;
+                    OnPropertyChanged(nameof(ChampionImageSource));
+                    Debug.WriteLine($"[ChampionSummary] Imagen para {Name} establecida a placeholder (sin Dispatcher).");
+                }
+            }
+        }
+
+
         [JsonIgnore]
         private volatile bool _isImageLoading = false;
         [JsonIgnore]
@@ -1525,6 +2027,7 @@ namespace SkinHunterWPF.Models
                     if (_imageCache.TryGetValue(imageUrl, out var cachedImageFromLock))
                     {
                         finalImage = cachedImageFromLock;
+                        Debug.WriteLine($"[ImageLoad] Cache HIT: {imageUrl} for {Name}");
                     }
                 }
 
@@ -1540,7 +2043,12 @@ namespace SkinHunterWPF.Models
 
                         if (token.IsCancellationRequested)
                         {
+                            Debug.WriteLine($"[ImageLoad] Cancelled during download: {imageUrl} for {Name}");
                             _isImageLoading = false;
+                            if (System.Windows.Application.Current != null)
+                                System.Windows.Application.Current.Dispatcher.Invoke(() => ChampionImageSource = _placeholderImage);
+                            else
+                                ChampionImageSource = _placeholderImage;
                             return;
                         }
 
@@ -1564,7 +2072,8 @@ namespace SkinHunterWPF.Models
                     }
                     catch (OperationCanceledException)
                     {
-                        Debug.WriteLine($"[ImageLoad] Cancelled: {imageUrl} for {Name}");
+                        Debug.WriteLine($"[ImageLoad] Cancelled (OperationCanceledException): {imageUrl} for {Name}");
+                        finalImage = _placeholderImage;
                     }
                     catch (Exception ex)
                     {
@@ -1574,23 +2083,36 @@ namespace SkinHunterWPF.Models
                 }
             }
 
-            if (!token.IsCancellationRequested)
+            if (System.Windows.Application.Current != null)
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() => // Calificado aquí
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (!token.IsCancellationRequested)
                     {
-                        ChampionImageSource = finalImage;
+                        ChampionImageSource = finalImage ?? _placeholderImage;
+                    }
+                    else
+                    {
+                        ChampionImageSource = _placeholderImage;
+                        Debug.WriteLine($"[ImageLoad] Carga para {Name} fue cancelada antes de asignación en Dispatcher.");
                     }
                 });
+            }
+            else
+            {
+                ChampionImageSource = finalImage ?? _placeholderImage;
             }
             _isImageLoading = false;
         }
 
         public void CancelCurrentLoad()
         {
-            _cancellationTokenSource?.Cancel();
-            _isImageLoading = false;
+            if (_isImageLoading)
+            {
+                Debug.WriteLine($"[ChampionSummary] Cancelando carga de imagen para {Name}.");
+                _cancellationTokenSource?.Cancel();
+                _isImageLoading = false;
+            }
         }
 
         [JsonIgnore]
@@ -1687,6 +2209,87 @@ namespace SkinHunterWPF.Models
     }
 }
 /// Models End of Chroma.cs ///
+
+/// Models Start of SearchResultItem.cs ///
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using SkinHunterWPF.Services;
+using System.Windows.Media.Imaging;
+using System;
+using System.Threading.Tasks;
+
+namespace SkinHunterWPF.Models
+{
+    public enum SearchResultType
+    {
+        Champion,
+        Skin
+    }
+
+    public partial class SearchResultItem : ObservableObject
+    {
+        public int Id { get; }
+        public string Name { get; }
+        public SearchResultType Type { get; }
+        public string DisplayType { get; }
+
+        [ObservableProperty]
+        private BitmapImage? _imageSource;
+
+        private readonly string? _imagePath; // Marcado como readonly
+
+        public int ChampionId { get; }
+        public Skin? OriginalSkinObject { get; }
+        public ChampionSummary? OriginalChampionObject { get; }
+
+
+        public SearchResultItem(ChampionSummary champion)
+        {
+            Id = champion.Id;
+            Name = champion.Name;
+            Type = SearchResultType.Champion;
+            DisplayType = "Champion";
+            _imagePath = champion.SquarePortraitPath;
+            ChampionId = champion.Id;
+            OriginalChampionObject = champion;
+        }
+
+        public SearchResultItem(Skin skin, ChampionSummary? parentChampion)
+        {
+            Id = skin.Id;
+            Name = skin.Name;
+            Type = SearchResultType.Skin;
+            DisplayType = "Champion Skin";
+            _imagePath = skin.TilePath;
+            ChampionId = skin.ChampionId;
+            OriginalSkinObject = skin;
+            OriginalChampionObject = parentChampion;
+        }
+
+        public Task LoadImageAsync()
+        {
+            if (ImageSource == null && !string.IsNullOrEmpty(_imagePath)) // Usar propiedad generada ImageSource
+            {
+                try
+                {
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(CdragonDataService.GetAssetUrl(_imagePath), UriKind.Absolute);
+                    bitmap.DecodePixelWidth = 64;
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+                    ImageSource = bitmap; // Usar propiedad generada
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error loading search result image {_imagePath}: {ex.Message}");
+                }
+            }
+            return Task.CompletedTask; // Para satisfacer async y quitar advertencia CS1998
+        }
+    }
+}
+/// Models End of SearchResultItem.cs ///
 
 /// Models Start of Skin.cs ///
 ﻿using System.Text.Json.Serialization;
@@ -2408,7 +3011,7 @@ namespace SkinHunterWPF.Converters
                 <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
                 <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
                 <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Padding" Value="8,5"/>
+                <Setter Property="Padding" Value="8,0"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="CaretBrush" Value="{StaticResource ForegroundLightGray}"/>
                 <Setter Property="Template">
@@ -2428,6 +3031,7 @@ namespace SkinHunterWPF.Converters
                             <ControlTemplate.Triggers>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
+                                        <Condition Property="IsFocused" Value="False"/>
                                         <Condition Property="Text" Value=""/>
                                     </MultiTrigger.Conditions>
                                     <Setter Property="Visibility" TargetName="PlaceholderText" Value="Visible"/>
@@ -2435,10 +3039,24 @@ namespace SkinHunterWPF.Converters
                                 <Trigger Property="IsFocused" Value="True">
                                     <Setter Property="BorderBrush" Value="{StaticResource BorderAccentColor}"/>
                                     <Setter TargetName="border" Property="Background" Value="{StaticResource ButtonHoverBrush}"/>
+                                    <Setter Property="Visibility" TargetName="PlaceholderText" Value="Collapsed"/>
                                 </Trigger>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
                                 </Trigger>
+                                <Trigger Property="Text" Value="{x:Null}">
+                                    <Setter Property="Visibility" TargetName="PlaceholderText" Value="Visible"/>
+                                </Trigger>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="Visibility" TargetName="PlaceholderText" Value="Visible"/>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsFocused" Value="True"/>
+                                        <Condition Property="Text" Value=""/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Visibility" TargetName="PlaceholderText" Value="Collapsed"/>
+                                </MultiTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
@@ -2522,8 +3140,8 @@ namespace SkinHunterWPF.Converters
             <Style TargetType="{x:Type ScrollBar}">
                 <Setter Property="SnapsToDevicePixels" Value="True"/>
                 <Setter Property="OverridesDefaultStyle" Value="true"/>
-                <Setter Property="Width" Value="10"/>
-                <Setter Property="MinWidth" Value="10"/>
+                <Setter Property="Width" Value="12"/>
+                <Setter Property="MinWidth" Value="12"/>
                 <Setter Property="Background" Value="{StaticResource ScrollBarBackgroundBrush}"/>
                 <Setter Property="Template">
                     <Setter.Value>
@@ -2548,8 +3166,8 @@ namespace SkinHunterWPF.Converters
                     <Trigger Property="Orientation" Value="Horizontal">
                         <Setter Property="Width" Value="Auto"/>
                         <Setter Property="MinWidth" Value="0"/>
-                        <Setter Property="Height" Value="10"/>
-                        <Setter Property="MinHeight" Value="10"/>
+                        <Setter Property="Height" Value="12"/>
+                        <Setter Property="MinHeight" Value="12"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type ScrollBar}">
@@ -2638,7 +3256,7 @@ namespace SkinHunterWPF.Converters
                 <Setter Property="Background" Value="{StaticResource CardBackgroundColor}"/>
                 <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
                 <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Padding" Value="8,5"/>
+                <Setter Property="Padding" Value="8,0"/>
                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
                 <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -2717,6 +3335,54 @@ namespace SkinHunterWPF.Converters
                 </Setter>
             </Style>
 
+            <Style x:Key="ModernCheckBoxStyle" TargetType="CheckBox">
+                <Setter Property="Foreground" Value="{StaticResource ForegroundColor}"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="{StaticResource CardBorderColor}"/>
+                <Setter Property="BorderThickness" Value="1.5"/>
+                <Setter Property="Padding" Value="5,2"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="CheckBox">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border x:Name="checkBoxBorder" Grid.Column="0"
+                                        Width="18" Height="18"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="3">
+                                    <Path x:Name="checkMark" Visibility="Collapsed" Width="10" Height="10"
+                                          Stretch="Fill" Fill="{StaticResource BorderAccentColor}"
+                                          Data="M 0 5 L 3 10 L 10 0 L 10 2 L 3 10 L 0 7 Z"/>
+                                </Border>
+                                <ContentPresenter Grid.Column="1" Margin="8,0,0,0"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  RecognizesAccessKey="True"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="checkMark" Property="Visibility" Value="Visible"/>
+                                    <Setter TargetName="checkBoxBorder" Property="BorderBrush" Value="{StaticResource BorderAccentColor}"/>
+                                    <Setter TargetName="checkBoxBorder" Property="Background" Value="{StaticResource HeaderBackgroundColor}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="checkBoxBorder" Property="BorderBrush" Value="{StaticResource BorderAccentColor}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.5"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>
@@ -2766,7 +3432,8 @@ namespace SkinHunterWPF
             services.AddTransient<ChampionGridViewModel>();
             services.AddTransient<ChampionDetailViewModel>();
             services.AddTransient<SkinDetailViewModel>();
-            services.AddSingleton<MainWindow>();
+            services.AddTransient<OmnisearchViewModel>();
+            services.AddSingleton<MainWindow>(sp => new MainWindow(sp));
         }
     }
 }
@@ -2784,7 +3451,7 @@ namespace SkinHunterWPF
         mc:Ignorable="d"
         Title="Skin Hunter" Height="720" Width="1280" MinHeight="600" MinWidth="1000"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource WindowBackgroundColor}"
+        Background="Transparent"
         Foreground="{StaticResource ForegroundColor}"
         WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResizeWithGrip">
 
@@ -2792,7 +3459,9 @@ namespace SkinHunterWPF
         <WindowChrome CaptionHeight="35" ResizeBorderThickness="8" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 
-    <Border >
+    <Border Background="{StaticResource HeaderBackgroundColor}"
+            CornerRadius="8"
+            Padding="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -2802,17 +3471,15 @@ namespace SkinHunterWPF
 
             <Border Grid.Row="0" Background="{StaticResource HeaderBackgroundColor}" Height="60" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown" CornerRadius="7,7,0,0">
                 <DockPanel LastChildFill="True">
-                    <Border DockPanel.Dock="Bottom" Height="2" Background="{StaticResource BorderAccentColor}" Margin="1,0,1,0" />
-                    <Grid Margin="10,0">
+                    <Border DockPanel.Dock="Bottom" Height="1.5" Background="{StaticResource BorderAccentColor}" Margin="0"/>
+                    <Grid Margin="15,0,10,0">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                            <Image Source="pack://application:,,,/Assets/icon.ico" Height="35" VerticalAlignment="Center" Margin="5,0,10,0" RenderOptions.BitmapScalingMode="Fant"/>
-                            <TextBlock Text="SKIN-HUNTER" Foreground="{StaticResource ForegroundColor}" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" FontFamily="Arial Black"/>
+                            <Image Source="pack://application:,,,/Assets/logo.png" Height="30" VerticalAlignment="Center" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="Fant"/>
+                            <TextBlock Text="SKIN-HUNTER" Foreground="{StaticResource ForegroundColor}" VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
                         </StackPanel>
-
                         <TextBlock Text="initializing"
                                    Visibility="{Binding CurrentViewModel.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}"
                                    Foreground="{StaticResource ForegroundGray}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontStyle="Italic"/>
-
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                             <Button Style="{StaticResource TitleBarButtonStyle}" Click="MinimizeButton_Click" ToolTip="Minimize" >
                                 <Path Data="M0,5 H10 V7 H0 Z" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Width="10" Height="10" Stretch="None"/>
@@ -2828,46 +3495,17 @@ namespace SkinHunterWPF
                 </DockPanel>
             </Border>
 
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-                          Padding="10,0,10,10" Focusable="False">
-                <ContentControl Content="{Binding CurrentViewModel}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
-                    <!-- Animación eliminada temporalmente para diagnosticar problemas de visibilidad -->
-                    <!--<ContentControl.Style>
-                        <Style TargetType="ContentControl">
-                            <Setter Property="Opacity" Value="0"/>
-                            <Setter Property="RenderTransform">
-                                <Setter.Value>
-                                    <TranslateTransform Y="20"/>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding CurrentViewModel.IsLoading}" Value="False">
-                                    <DataTrigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.35"/>
-                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" To="0" Duration="0:0:0.35">
-                                                    <DoubleAnimation.EasingFunction>
-                                                        <CubicEase EasingMode="EaseOut"/>
-                                                    </DoubleAnimation.EasingFunction>
-                                                </DoubleAnimation>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </DataTrigger.EnterActions>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding CurrentViewModel.IsLoading}" Value="True">
-                                    <DataTrigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.1"/>
-                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" To="20" Duration="0:0:0.01"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </DataTrigger.EnterActions>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ContentControl.Style>-->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Background="Transparent" 
+                          Padding="0" Focusable="False">
+                <ContentControl x:Name="MainContentControl"
+                                Content="{Binding CurrentViewModel}"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch"
+                                Margin="66,0,66,0"
+                                Background="{StaticResource WindowBackgroundColor}">
                     <ContentControl.Resources>
                         <DataTemplate DataType="{x:Type vm:ChampionGridViewModel}">
                             <v:ChampionGridView/>
@@ -2879,28 +3517,41 @@ namespace SkinHunterWPF
                 </ContentControl>
             </ScrollViewer>
 
-            <Border Grid.Row="2" Background="{StaticResource HeaderBackgroundColor}" Padding="0,5" CornerRadius="0,0,7,7">
+            <Border Grid.Row="2" Background="{StaticResource HeaderBackgroundColor}" Padding="0" CornerRadius="0,0,7,7">
                 <DockPanel LastChildFill="True">
-                    <Border DockPanel.Dock="Top" Height="2" Background="{StaticResource BorderAccentColor}" Margin="1,0,1,0"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Border DockPanel.Dock="Top" Height="1.5" Background="{StaticResource BorderAccentColor}" Margin="0"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,7,0,7">
                         <Button Style="{StaticResource NavButtonStyle}" Content="Champions" Command="{Binding NavigateToChampionsCommand}"
                                 Tag="M3,3H11V11H3V3M13,3H21V11H13V3M3,13H11V21H3V13M13,13H21V21H13V13Z"/>
-                        <Button Style="{StaticResource NavButtonStyle}" Content="Search" Command="{Binding OpenSearchCommand}"
-                                Tag="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L21.5,20L20,21.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"/>
-                        <Button Style="{StaticResource NavButtonStyle}" Content="Installed" Command="{Binding NavigateToInstalledCommand}"
+                        <Button Style="{StaticResource NavButtonStyle}" Content="Search" Command="{Binding OpenSearchCommand}" 
+                            Tag="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L21.5,20L20,21.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"/>
+                            <Button Style="{StaticResource NavButtonStyle}" Content="Installed" Command="{Binding NavigateToInstalledCommand}"
                                 Tag="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
-                        <Button Style="{StaticResource NavButtonStyle}" Content="Profile" Command="{Binding OpenProfileCommand}"
+                            <Button Style="{StaticResource NavButtonStyle}" Content="Profile" Command="{Binding OpenProfileCommand}"
                                 Tag="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
                     </StackPanel>
                 </DockPanel>
             </Border>
 
-            <Grid Grid.Row="0" Grid.RowSpan="3" Background="#DD1A1A1A"
+            <Grid Grid.Row="0" Grid.RowSpan="3" Background="#CC121212"
                   Visibility="{Binding DialogViewModel, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
                 <ContentControl Content="{Binding DialogViewModel}" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <ContentControl.Resources>
                         <DataTemplate DataType="{x:Type vm:SkinDetailViewModel}">
                             <v:SkinDetailDialog/>
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </ContentControl>
+            </Grid>
+
+            <Grid Grid.Row="0" Grid.RowSpan="3" Background="#DD0A0A0A"
+                  Visibility="{Binding OmnisearchDialogViewModel, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
+                <ContentControl Content="{Binding OmnisearchDialogViewModel}" 
+                                HorizontalAlignment="Center" 
+                                VerticalAlignment="Center">
+                    <ContentControl.Resources>
+                        <DataTemplate DataType="{x:Type vm:OmnisearchViewModel}">
+                            <v:OmnisearchDialog/>
                         </DataTemplate>
                     </ContentControl.Resources>
                 </ContentControl>
@@ -2918,8 +3569,11 @@ using System.Windows.Input;
 using System.Windows.Forms;
 using System.Drawing;
 using SkinHunterWPF.ViewModels;
+using SkinHunterWPF.Services; // AÑADIR ESTE USING
 using System.IO;
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace SkinHunterWPF
 {
@@ -2927,86 +3581,195 @@ namespace SkinHunterWPF
     {
         private NotifyIcon? _notifyIcon;
         private bool _isExplicitClose = false;
+        private bool _notifyIconInitializedSuccessfully = false;
+        private readonly IServiceProvider _serviceProvider;
+        private int? _lastChampionIdFromDetailView = null;
 
-        public MainWindow()
+
+        public MainWindow(IServiceProvider serviceProvider)
         {
+            Debug.WriteLine("[MainWindow] Constructor INICIADO.");
             InitializeComponent();
+            _serviceProvider = serviceProvider;
+            Debug.WriteLine("[MainWindow] InitializeComponent COMPLETADO.");
             SetupNotifyIcon();
+            Debug.WriteLine("[MainWindow] SetupNotifyIcon LLAMADO desde el constructor.");
             MaximizeButton.IsEnabled = false;
             this.Loaded += MainWindow_Loaded;
+            Debug.WriteLine("[MainWindow] Constructor FINALIZADO.");
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("[MainWindow] MainWindow_Loaded INICIADO.");
             if (DataContext is MainViewModel mvm)
             {
                 await mvm.EnsureInitialDataLoadedAsync();
             }
+            Debug.WriteLine("[MainWindow] MainWindow_Loaded FINALIZADO.");
+        }
+
+        private void MinimizeToTray()
+        {
+            Debug.WriteLine("[MainWindow] Minimizando a la bandeja...");
+            this.Hide();
+            if (_notifyIcon != null) _notifyIcon.Visible = true;
+
+            if (DataContext is MainViewModel mainVM)
+            {
+                if (mainVM.CurrentViewModel is ChampionGridViewModel cgvm)
+                {
+                    Debug.WriteLine("[MainWindow] Llamando a ReleaseResourcesForTray en ChampionGridViewModel.");
+                    cgvm.ReleaseResourcesForTray();
+                }
+                else if (mainVM.CurrentViewModel is ChampionDetailViewModel cdvm)
+                {
+                    Debug.WriteLine("[MainWindow] Llamando a ReleaseResourcesForTray en ChampionDetailViewModel.");
+                    _lastChampionIdFromDetailView = cdvm.Champion?.Id;
+                    cdvm.ReleaseResourcesForTray();
+                }
+            }
+
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true);
+            GC.WaitForPendingFinalizers();
+            Debug.WriteLine("[MainWindow] Intento de liberación de recursos y GC invocado para bandeja.");
+        }
+
+        private async Task RestoreFromTrayAsync()
+        {
+            Debug.WriteLine("[MainWindow] Restaurando desde la bandeja...");
+            if (_notifyIcon != null) _notifyIcon.Visible = false;
+
+            this.Show();
+            this.WindowState = WindowState.Normal;
+            this.Activate();
+
+            if (DataContext is MainViewModel mainVM)
+            {
+                Debug.WriteLine($"[MainWindow] ViewModel actual al restaurar: {mainVM.CurrentViewModel?.GetType().Name}");
+                if (mainVM.CurrentViewModel is ChampionGridViewModel cgvm)
+                {
+                    Debug.WriteLine("[MainWindow] Recargando ChampionGridViewModel...");
+                    if (cgvm.LoadChampionsCommand.CanExecute(null))
+                        await cgvm.LoadChampionsCommand.ExecuteAsync(null);
+                }
+                else if (mainVM.CurrentViewModel is ChampionDetailViewModel cdvm)
+                {
+                    if (_lastChampionIdFromDetailView.HasValue)
+                    {
+                        Debug.WriteLine($"[MainWindow] Preparando para recargar ChampionDetailViewModel (ID guardado: {_lastChampionIdFromDetailView.Value})...");
+                        cdvm.PrepareForReload();
+                        if (cdvm.LoadChampionCommand.CanExecute(_lastChampionIdFromDetailView.Value))
+                        {
+                            Debug.WriteLine($"[MainWindow] Recargando ChampionDetailViewModel para ID: {_lastChampionIdFromDetailView.Value}.");
+                            await cdvm.LoadChampionCommand.ExecuteAsync(_lastChampionIdFromDetailView.Value);
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"[MainWindow] No se pudo ejecutar LoadChampionCommand para ChampionDetailViewModel ID: {_lastChampionIdFromDetailView.Value}. Volviendo a la cuadrícula.");
+                            _serviceProvider.GetRequiredService<INavigationService>().NavigateTo<ChampionGridViewModel>();
+                        }
+                        _lastChampionIdFromDetailView = null;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("[MainWindow] ChampionDetailViewModel no tenía un ID de campeón previo para recargar, volviendo a la cuadrícula.");
+                        _serviceProvider.GetRequiredService<INavigationService>().NavigateTo<ChampionGridViewModel>();
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("[MainWindow] No se reconoce el ViewModel actual o es null, navegando a la vista de campeones por defecto.");
+                    _serviceProvider.GetRequiredService<INavigationService>().NavigateTo<ChampionGridViewModel>();
+                }
+            }
+            Debug.WriteLine("[MainWindow] Ventana restaurada y ViewModel recargado (intento).");
         }
 
         private void SetupNotifyIcon()
         {
+            Debug.WriteLine("[NotifyIcon] SetupNotifyIcon INICIADO.");
+            string iconFileName = "icon.ico";
+            string iconPath = "";
             try
             {
-                string iconFileName = "icon.ico"; // Nombre del archivo de icono
-                string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", iconFileName);
+                iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", iconFileName);
+                Debug.WriteLine($"[NotifyIcon] Intentando cargar icono desde: {iconPath}");
 
                 if (File.Exists(iconPath))
                 {
+                    Debug.WriteLine($"[NotifyIcon] Archivo '{iconPath}' EXISTE.");
                     _notifyIcon = new NotifyIcon
                     {
-                        Icon = new Icon(iconPath),
-                        Visible = false,
-                        Text = "Skin Hunter"
+                        Text = "Skin Hunter",
+                        Visible = false
                     };
-                    _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
+
+                    try
+                    {
+                        _notifyIcon.Icon = new Icon(iconPath);
+                        Debug.WriteLine("[NotifyIcon] Icono cargado y asignado exitosamente.");
+                    }
+                    catch (Exception exIcon)
+                    {
+                        Debug.WriteLine($"[NotifyIcon] EXCEPCIÓN al cargar Icon (archivo: {iconPath}): {exIcon.ToString()}. Asegúrate que '{iconFileName}' es un archivo .ico válido y accesible.");
+                        _notifyIcon.Dispose();
+                        _notifyIcon = null;
+                        _notifyIconInitializedSuccessfully = false;
+                        return;
+                    }
+
+                    _notifyIcon.DoubleClick += async (s, args) => await RestoreFromTrayAsync();
 
                     var contextMenu = new ContextMenuStrip();
-                    contextMenu.Items.Add("Abrir Skin Hunter", null, (s, args) => RestoreWindow());
+                    contextMenu.Items.Add("Abrir Skin Hunter", null, async (s, args) => await RestoreFromTrayAsync());
+                    contextMenu.Items.Add(new ToolStripSeparator());
                     contextMenu.Items.Add("Salir", null, (s, args) => ExitApplication());
                     _notifyIcon.ContextMenuStrip = contextMenu;
+
+                    _notifyIconInitializedSuccessfully = true;
+                    Debug.WriteLine("[NotifyIcon] NotifyIcon configurado completamente y marcado como exitoso.");
                 }
                 else
                 {
-                    Debug.WriteLine($"Error: NotifyIcon - El archivo '{iconPath}' no fue encontrado. El icono de la bandeja del sistema no estará disponible.");
+                    Debug.WriteLine($"[NotifyIcon] ERROR CRÍTICO: El archivo '{iconPath}' NO FUE ENCONTRADO.");
+                    _notifyIconInitializedSuccessfully = false;
                 }
             }
-            catch (Exception ex)
+            catch (Exception exSetup)
             {
-                Debug.WriteLine($"Error al configurar NotifyIcon: {ex.Message}");
+                Debug.WriteLine($"[NotifyIcon] Excepción general en SetupNotifyIcon (fuera de la carga del Icon): {exSetup.ToString()}");
+                _notifyIconInitializedSuccessfully = false;
+                if (_notifyIcon != null)
+                {
+                    _notifyIcon.Dispose();
+                    _notifyIcon = null;
+                }
             }
-        }
-
-        private void RestoreWindow()
-        {
-            Show();
-            WindowState = WindowState.Normal;
-            Activate();
-            if (_notifyIcon != null) _notifyIcon.Visible = false;
+            Debug.WriteLine($"[NotifyIcon] SetupNotifyIcon FINALIZADO. _notifyIconInitializedSuccessfully = {_notifyIconInitializedSuccessfully}");
         }
 
         private void ExitApplication()
         {
+            Debug.WriteLine("[NotifyIcon] Salida explícita solicitada.");
             _isExplicitClose = true;
             _notifyIcon?.Dispose();
             System.Windows.Application.Current.Shutdown();
         }
 
-        private void NotifyIcon_DoubleClick(object? sender, EventArgs e)
-        {
-            RestoreWindow();
-        }
-
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
-            if (!_isExplicitClose && _notifyIcon != null && _notifyIcon.Icon != null)
+            Debug.WriteLine($"[NotifyIcon] OnClosing: _isExplicitClose={_isExplicitClose}, _notifyIconInitializedSuccessfully={_notifyIconInitializedSuccessfully}");
+
+            if (!_isExplicitClose && _notifyIconInitializedSuccessfully && _notifyIcon != null)
             {
+                Debug.WriteLine("[NotifyIcon] OnClosing: Cancelando cierre, llamando a MinimizeToTray.");
                 e.Cancel = true;
-                Hide();
-                _notifyIcon.Visible = true;
+                MinimizeToTray();
             }
             else
             {
+                Debug.WriteLine("[NotifyIcon] OnClosing: Cierre normal o NotifyIcon no listo/inicializado. Realizando dispose.");
                 _notifyIcon?.Dispose();
             }
             base.OnClosing(e);
@@ -3029,6 +3792,7 @@ namespace SkinHunterWPF
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("[MainWindow] Botón X presionado, llamando a this.Close().");
             this.Close();
         }
 

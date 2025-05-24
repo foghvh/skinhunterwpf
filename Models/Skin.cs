@@ -30,12 +30,26 @@ namespace SkinHunterWPF.Models
         [JsonPropertyName("chromas")]
         public List<Chroma>? Chromas { get; set; }
 
+        [JsonIgnore]
         public string TileImageUrl => Services.CdragonDataService.GetAssetUrl(TilePath);
+        [JsonIgnore]
         public string SplashImageUrl => Services.CdragonDataService.GetAssetUrl(SplashPath);
+        [JsonIgnore]
         public string? RarityImageUrl => RarityGemPath != null ? Services.CdragonDataService.GetAssetUrl(RarityGemPath) : null;
+        [JsonIgnore]
         public string RarityName => GetRarityNameFromPath(RarityGemPath);
-        public int ChampionId => Id / 1000;
+
+        [JsonIgnore]
+        public int ChampionId => Id / 1000; // Propiedad calculada, solo get
+
+        [JsonIgnore]
         public bool HasChromas => Chromas?.Any() ?? false;
+
+        // Constructor sin parámetros necesario para la deserialización si no todos los campos son públicos con set.
+        // Aunque con System.Text.Json y propiedades públicas con set, no siempre es estrictamente necesario
+        // si el JSON mapea directamente.
+        public Skin() { }
+
 
         private static string GetRarityNameFromPath(string? path)
         {

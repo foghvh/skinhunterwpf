@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\asd\Desktop\skinhunterwpf\obj\Debug\net8.0-windows\
+C:\Users\dev\source\repos\SkinHunterWPF\obj\Debug\net8.0-windows\
 SkinHunterWPF
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-C:\Users\asd\Desktop\skinhunterwpf\App.xaml
+C:\Users\dev\source\repos\SkinHunterWPF\App.xaml
 5391710510
 12112165009
 352050562953
-211-1513183873
+211925508498
 MainWindow.xaml;Views\ChampionDetailView.xaml;Views\ChampionGridView.xaml;Views\OmnisearchDialog.xaml;Views\SkinDetailDialog.xaml;
 
-False
+True
 
